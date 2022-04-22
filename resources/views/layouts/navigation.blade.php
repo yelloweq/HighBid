@@ -22,11 +22,10 @@
                     <x-nav-link :href="route('messages')" :active="request()->routeIs('messages')" hx-boost="false">
                         {{ __('Messages') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('forum')" :active="request()->routeIs('forum')" hx-boost="false">
-                        {{ __('Forum') }}
-                    </x-nav-link>
-
                 @endauth
+                <x-nav-link :href="route('forum')" :active="request()->routeIs('forum')" hx-boost="false">
+                    {{ __('Forum') }}
+                </x-nav-link>
                 <x-nav-link :href="route('about')" :active="request()->routeIs('about')" hx-boost="false">
                     {{ __('About') }}
                 </x-nav-link>

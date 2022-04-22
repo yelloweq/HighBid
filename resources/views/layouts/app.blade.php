@@ -22,6 +22,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+
     @include('flatpickr::components.style')
     @stack('styles')
 </head>

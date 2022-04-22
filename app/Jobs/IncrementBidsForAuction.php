@@ -32,57 +32,6 @@ class IncrementBidsForAuction implements ShouldQueue
         $this->processBid();
     }
 
-    // private function processBid()
-    // {
-    //     $highestAutobid = $this->auction->bids()
-    //         ->where('auto_bid', true)
-    //         ->orderByDesc('amount')
-    //         ->first();
-
-    //     if (!$highestAutobid) {
-    //         Log::error("No highest autobid found for Auction ID: {$this->auction->id}");
-    //         return;
-    //     }
-
-    //     if ($highestAutobid->current_amount >= $highestAutobid->amount) {
-    //         Log::info("Highest autobid is already at max for Auction ID: {$this->auction->id}");
-    //         return;
-    //     }
-
-    //     $currentHighestBidder = $this->auction->getCurrentHighestBidder();
-
-    //     if (!$currentHighestBidder) {
-    //         Log::error("No current highest bidder found for Auction ID: {$this->auction->id}");
-    //         return;
-    //     }
-
-    //     $isCurrentHighestBidder = $currentHighestBidder->id == $highestAutobid->user_id;
-
-    //     if ($isCurrentHighestBidder) {
-    //         Log::info("Current highest bidder is also the highest autobidder for Auction ID: {$this->auction->id}");
-    //         return;
-    //     }
-
-    //     $bidIncrementInPence = $this->auction->getBidIncrement();
-    //     $currentHighestBidInPence = $this->auction->getCurrentHighestBid()->current_amount;
-
-
-    //     $canBeIncremented = ($currentHighestBidInPence + $bidIncrementInPence) <= $highestAutobid->amount;
-
-    //     if ($canBeIncremented) {
-    //         $highestAutobid->update(['current_amount' => $currentHighestBidInPence + $bidIncrementInPence]);
-
-    //         Log::info('1:Incremented bid for auction ' . $this->auction->id . ' to ' . $highestAutobid->current_amount);
-
-    //         $this->processBid();
-    //     } elseif ($highestAutobid->amount > $highestAutobid->current_amount) {
-    //         $highestAutobid->update(['current_amount' => $highestAutobid->amount]);
-
-    //         Log::info('2:Incremented to MAX bid for auction ' . $this->auction->id . ' to ' . $highestAutobid->current_amount);
-
-    //         $this->processBid();
-    //     }
-    // }
 
     private function processBid($currentHighestBid = null)
     {

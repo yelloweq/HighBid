@@ -1,8 +1,9 @@
 <x-app-layout>
     @php
         //temporary rating
-        $rating = 3.2;
+        $rating = 0;
         $isAuthenticated = Auth::check();
+        $currentDate = \Carbon\Carbon::now();
     @endphp
 
     @push('styles')
@@ -22,14 +23,18 @@
             }
 
             @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
+                }
             }
 
             .new-bid {
                 animation: fadeIn 1s ease-in-out;
             }
-
         </style>
     @endpush
 
@@ -126,9 +131,33 @@
                 </div>
                 <!-- Content -->
                 <div class="md:w-1/2 grid grid-cols-2">
-                    <h1 class="text-3xl font-semibold mb-2 col-span-2">
-                        {{ $auction->title }}
-                    </h1>
+                    @if (Auth::user()->id === $auction->seller->id)
+                        <div class="text-3xl font-semibold flex flex-col col-span-2 mb-8">
+                            <div class="flex justify-between items-center">
+                                {{ $auction->title }}
+                                <div hx-get="{{ route('auction.edit.form', $auction) }}" hx-swap="outerHTML"
+                                    hx-target="body" hx-trigger="click"><i class="fa-solid fa-pen-to-square "
+                                        style="color: #ffffff;"></i></div>
+                            </div>
+
+                            @if (empty(json_decode($auction->images->first()?->metadata, true)))
+                                <div class="text-lg font-normal  text-red-400">
+                                    Warning: This auction contains flagged images
+                                </div>
+                            @endif
+                        </div>
+                    @else
+                        <div class="text-3xl font-semibold col-span-2 mb-8">
+
+                            {{ $auction->title }}
+
+                            @if ($auction->images->count() > 0 || true)
+                                <div class="text-lg font-normal  text-red-400">
+                                    Warning: This auction contains unverified images
+                                </div>
+                            @endif
+                        </div>
+                    @endif
                     <div class="auction-info">
 
                         <div class="flex items-center mb-4">
@@ -146,7 +175,7 @@
                                 @endfor
                             </div>
                             <span class="text-gray-400 text-sm ml-3">
-                                (753)
+                                (0)
                             </span>
                         </div>
                         <p class="text-gray-400 mb-4">
@@ -169,7 +198,7 @@
                             </span>
                         </div>
 
-                        @if ($auction->seller->id == auth()->id() || true)
+                        @if ($auction->seller->id == auth()->id() || $auction->winner?->id == auth()->id())
                             <div class="mb-4">
                                 <ul>
                                     <li>This auction is currently:<div
@@ -180,14 +209,18 @@
                                 </ul>
                             </div>
                         @endif
-                        @if ($auction->winner_id == auth()->id() && $isAuthenticated)
+                        @if ($auction->winner_id == auth()->id() && auth()->check())
                             <div class="flex items-center mb-4">
                                 <form action="{{ route('payment.checkout', $auction) }}" method="POST"
                                     hx-boost="false">
                                     @csrf
-                                    <button
+                                    <button @if ($auction->status === 'Closed' && $auction->winner->id) disabled @endif
                                         class="px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60 w-full">
-                                        PROCEED TO PAYMENT
+                                        @if ($auction->status === 'Closed')
+                                            PAID
+                                        @else
+                                            Proceed to payment
+                                        @endif
                                     </button>
                                 </form>
                             </div>
@@ -200,108 +233,54 @@
                                     <div class="flex align-middle items-center justify-between mb-4">
                                         <input class="text-black disabled:opacity-80" type="text" name="bid"
                                             placeholder="£" autocomplete="false" required pattern="^\d+(\.\d{1,2})?$"
-                                            id="bid" @if ($auction->end_time < now() || auth()->id() == $auction->seller->id) disabled @endif></input>
+                                            id="bid" @if ($auction->end_time->lte($currentDate)) disabled @endif />
                                         <label class="flex items-center cursor-pointer">
                                             <input type="checkbox" name="auto_bid" id="auto_bid" class="mr-2"
                                                 value="1" onchange="toggleAutoBidLabel(this)">
                                             <span id="auto_bid_label" class="w-28">Autobid: OFF</span>
                                         </label>
-
                                     </div>
                                     <button
                                         class="px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60 w-full"
-                                        @if (!$isAuthenticated) disabled @endif>
+                                        @if (!auth()->check() || $auction->end_time->lte($currentDate)) disabled @endif>
                                         PLACE BID
                                     </button>
                                 </form>
                             </div>
                         @endif
+
                         <div id="messages" class="w-full min-h-14 mb-2">
-                            
+
                         </div>
 
                         @if ($auction->seller->id != auth()->id())
                             <p class="text-blue-400 hover:underline cursor-pointer">
-                                <a href="/messages/{{ $auction->seller->id }}" hx-boost="false"> Message seller for
+                                <a href="/messages/{{ $auction->seller->id }}" hx-boost="false" hx-push-url="true">
+                                    Message seller for
                                     more
                                     information </a>
                             </p>
                         @endif
                         <p class="text-gray-600 text-sm mb-4">
-                            <span>Ends on {{ $auction->end_time->isoFormat('MMMM Do YYYY, h:mm:ss a') }}.</span>
+                            <span>Ends on {{ $auction->end_time->isoFormat('MMMM Do YYYY, h:mm a') }}.</span>
                         </p>
                         <p class="text-gray-600 text-sm">
-                            365 day returns.
-                            <a class="text-blue-600" href="#">
-                                Return Policy
-                            </a>
-                            .
+                            {{-- additional info text here --}}
                         </p>
                     </div>
                     <div class="bid-history">
-                        <div class="" id="watchersCount"
-                            hx-get="{{ route('auction.watchers', ['auction' => $auction]) }}"
+                        <div id="watchersCount" hx-get="{{ route('auction.watchers', ['auction' => $auction]) }}"
                             hx-trigger="load, every 10s"></div>
 
                         <h4 class=" text-lg text-center mt-4">Recent bids</h4>
-                        <div hx-get="{{ route('auction.recentBids', $auction) }}" hx-trigger="load, every 10s, from:closest(#bid-form)"
-                            hx-target="this"
-                        class="relative flex flex-col w-full h-full overflow-scroll text-white bg-blue-primary shadow-md bg-clip-border rounded-xl m-4">
-                    </div>
+                        <div hx-get="{{ route('auction.recentBids', $auction) }}"
+                            hx-trigger="load, every 10s, from:closest(#bid-form)" hx-target="this"
+                            class="relative flex flex-col w-full h-full overflow-scroll text-white bg-blue-primary shadow-md bg-clip-border rounded-xl m-4">
+                        </div>
 
                     </div>
 
-                    {{-- <div
-                        class="grid lg:grid-rows-2 lg:grid-cols-5 sm:grid-rows-3 sm:grid-cols-3 items-center mt-4 bg-blue-secondary justify-center rounded-md flex-wrap p-6 text-center">
-                        <div class="text-gray-400 flex flex-col items-center mb-4">
-                            <dt class="mb-2 min-w-24">water-resistant</dt>
-                            <dd><i class="fa-regular fa-circle-check fa-lg"></i></dd>
-                        </div>
-                        <div class="text-gray-400 flex flex-col items-center mb-4">
-                            <dt class="mb-2 min-w-24">vegan</dt>
-                            <dd><i class="fa-regular fa-circle-check fa-lg text-green-300"></i></dd>
-                        </div>
-                        <div class="text-gray-400 flex flex-col items-center mb-4">
-                            <dt class="mb-2 min-w-24">ph</dt>
-                            <dd><i class="fa-regular fa-circle-check fa-lg"></i></dd>
-                        </div>
-                        <div class="text-gray-400 flex flex-col items-center mb-4">
-                            <dt class="mb-2 min-w-24">ph</dt>
-                            <dd><i class="fa-regular fa-circle-xmark fa-lg text-red-300"></i></dd>
-                        </div>
-                        <div class="text-gray-400 flex flex-col items-center mb-4">
-                            <dt class="mb-2 min-w-24">ph</dt>
-                            <dd><i class="fa-regular fa-circle-check fa-lg"></i></dd>
-                        </div>
-                        <div class="text-gray-400 flex flex-col items-center mb-4">
-                            <dt class="mb-2 min-w-24">ph</dt>
-                            <dd><i class="fa-regular fa-circle-check fa-lg"></i></dd>
-                        </div>
-                        <div class="text-gray-400 flex flex-col items-center mb-4">
-                            <dt class="mb-2 min-w-24">ph</dt>
-                            <dd><i class="fa-regular fa-circle-check fa-lg"></i></dd>
-                        </div>
-                        <div class="text-gray-400 flex flex-col items-center mb-4">
-                            <dt class="mb-2 min-w-24">ph</dt>
-                            <dd><i class="fa-regular fa-circle-check fa-lg"></i></dd>
-                        </div>
-                        <div class="text-gray-400 flex flex-col items-center mb-4">
-                            <dt class="mb-2 min-w-24">ph</dt>
-                            <dd><i class="fa-regular fa-circle-check fa-lg"></i></dd>
-                        </div>
-                        <div class="text-gray-400 flex flex-col items-center mb-4">
-                            <dt class="mb-2 min-w-24">ph</dt>
-                            <dd><i class="fa-regular fa-circle-check fa-lg"></i></dd>
-                        </div>
-                        <div class="text-gray-400 flex flex-col items-center mb-4">
-                            <dt class="mb-2 min-w-24">ph</dt>
-                            <dd><i class="fa-regular fa-circle-check fa-lg"></i></dd>
-                        </div>
-                        <div class="text-gray-400 flex flex-col items-center mb-4">
-                            <dt class="mb-2 min-w-24">ph</dt>
-                            <dd><i class="fa-regular fa-circle-check fa-lg"></i></dd>
-                        </div>
-                    </div> --}}
+
                 </div>
             </div>
         </div>
@@ -333,5 +312,4 @@
             sessionStorage.setItem('lastBidAmount', newBidAmount);
         }
     });
-
 </script>

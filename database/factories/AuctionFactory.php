@@ -28,9 +28,9 @@ class AuctionFactory extends Factory
             'type' => fake()->randomElement(AuctionType::cases()),
             'price' => fake()->randomNumber(5, false),
             'delivery_type' => fake()->randomElement(DeliveryType::cases()),
-            'category_id' => Category::all()->random()->id,
+            'category_id' => Category::factory(),
             'winner_id' => null,
-            'seller_id' => User::all()->random()->id,
+            'seller_id' => User::factory(),
             'start_time' => fake()->dateTimeBetween('-1 month', 'now'),
             'end_time' => fake()->dateTimeBetween('now', '+1 month'),
         ];

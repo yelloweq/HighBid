@@ -50,12 +50,6 @@ class CreateAuctionRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator)
     {
-        if (!$this->header('HX-Request')) {
-            throw new HttpResponseException(
-                response()->json(['errors' => $validator->errors()], 422)
-            );
-        }
-
         return response()->view('components.auction-create-form', [
             'auctionTypes' => AuctionType::cases(),
             'deliveryTypes' => DeliveryType::cases(),

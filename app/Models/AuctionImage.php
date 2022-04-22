@@ -22,6 +22,7 @@ class AuctionImage extends Model
         'rekognition_labels',
         'flagged',
         'metadata',
+        'metadata_mismatch_reason',
     ];
 
     protected $casts = [
@@ -31,5 +32,15 @@ class AuctionImage extends Model
     public function auction()
     {
         return $this->belongsTo(Auction::class);
+    }
+    public function flagMetadataMismatch(string $field)
+    {
+        $this->metadata_mismatch_reason = $field;
+        $this->save();
+    }
+
+    public function getMismatchReason()
+    {
+        return $this->whereNotNull('metadata_mismatch_reason')->first()?->metadata_mismatch_reason;
     }
 }

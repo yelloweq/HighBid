@@ -43,10 +43,12 @@ class ProcessImageMetadata implements ShouldQueue
 
             if (($metadata['Model'] ?? null) !== $referenceModel) {
                 Log::warning("Model mismatch for image {$image->id} in auction {$this->auction->id}");
+                $image->flagMetadataMismatch('Model');
             }
 
             if (!$this->locationApproximatelySame($referenceLocation, $metadata['GPS'] ?? null)) {
                 Log::warning("Location mismatch for image {$image->id} in auction {$this->auction->id}");
+                $image->flagMetadataMismatch('Location');
             }
         }
     }

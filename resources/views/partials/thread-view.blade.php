@@ -4,7 +4,7 @@
         <div
             class="relative flex flex-col w-full min-h-[600px]  text-white bg-gray-900 shadow-md rounded-xl bg-clip-border">
             <div class="flex h-max min-h-[400px]">
-                <div class="relative mx-4 mt-4 overflow-hidden text-white bg-gray-900 rounded-none bg-clip-border">
+                <div class="mx-4 mt-4 overflow-hidden text-white bg-gray-900 rounded-none bg-clip-border h-full w-full">
                     <div class="flex flex-col items-center justify-center gap-8 mb-8">
                         <div>
                             <h5

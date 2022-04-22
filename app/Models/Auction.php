@@ -43,8 +43,8 @@ class Auction extends Model
     protected $casts = [
         'type' => AuctionType::class,
         'delivery_type' => DeliveryType::class,
-        'start_time' => 'date',
-        'end_time' => 'date',
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
     ];
 
     /**
@@ -102,7 +102,7 @@ class Auction extends Model
 
     public function getCurrentHighestBidder(): ?User
     {
-        return $this->bids()->where('current_amount', $this->getCurrentHighestBid()->current_amount)->first()?->user;
+        return $this->bids()->where('current_amount', $this->getCurrentHighestBid()?->current_amount)->first()?->user;
     }
 
     public function getHighestBid(): ?Bid
@@ -117,6 +117,6 @@ class Auction extends Model
 
     public function getBidIncrement(): int
     {
-        return BidIncrementHelper::getBidIncrement($this->getCurrentHighestBid()->current_amount);
+        return BidIncrementHelper::getBidIncrement($this->getCurrentHighestBid()?->current_amount ?: $this->price);
     }
 }

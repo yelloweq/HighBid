@@ -23,6 +23,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Mauricius\LaravelHtmx\Http\HtmxResponseClientRedirect;
+use Mauricius\LaravelHtmx\Http\HtmxResponseClientRefresh;
 use Ramsey\Uuid\Uuid;
 
 class AuctionController extends Controller
@@ -70,8 +72,12 @@ class AuctionController extends Controller
     /**
      * Display the auction create form.
      */
-    public function create(Request $request): View
+    public function create(Request $request): View|HtmxResponseClientRedirect
     {
+        if (!Auth::check()) {
+            return new HtmxResponseClientRedirect(route('login'));
+        }
+
         $deliveryTypes = DeliveryType::cases();
         $auctionTypes = AuctionType::cases();
 
@@ -87,33 +93,49 @@ class AuctionController extends Controller
     /**
      * Store the auction form data.
      */
-    public function store(CreateAuctionRequest $request): View
+    public function store(CreateAuctionRequest $request): Response
     {
-        //need to add multi image upload
-        $auction = Auction::create([
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-            'features' => $request->input('features'),
-            'type' => $request->input('auction-type'),
-            'price' => ((float) $request->input('price')) * 100,
-            'delivery_type' => $request->input('delivery-type'),
-            'seller_id' => $request->user()->id ?? Auth::id(),
-            'start_time' => Carbon::now(),
-            'end_time' => $request->input('end-time'),
-        ]);
+        try {
+            // dd(Carbon::createFromDate($request->input('end_date')));
+            $auction = Auction::create([
+                'title' => $request->input('title'),
+                'description' => $request->input('description'),
+                'features' => $request->input('features'),
+                'type' => $request->input('auction-type'),
+                'price' => ((float) $request->input('price')) * 100,
+                'delivery_type' => $request->input('delivery-type'),
+                'seller_id' => $request->user()->id ?? Auth::id(),
+                'start_time' => Carbon::now(),
+                'end_time' => Carbon::parse($request->input('end_date')),
+            ]);
 
-        if (!empty($request->auctionCreateKey)) {
-            Log::info('Dispatching job to match images to auction and process with rekognition');
-            MatchUploadedImagesToAuction::withChain([
-                new ProcessImageWithRekognition($auction),
-                new ProcessImageMetadata($auction),
-                new SetAuctionLive($auction)
-            ])->dispatch($auction, $request->auctionCreateKey);
+            if (!empty($request->auctionCreateKey)) {
+                Log::info('Dispatching job to match images to auction and process with rekognition');
+                MatchUploadedImagesToAuction::withChain([
+                    new ProcessImageWithRekognition($auction),
+                    new ProcessImageMetadata($auction),
+                    new SetAuctionLive($auction)
+                ])->dispatch($auction, $request->auctionCreateKey);
+            }
+
+            return new HtmxResponseClientRedirect(route('auction.view', ['auction' => $auction->id]));
+        } catch (\Exception $e) {
+            dd('error', $e->getMessage());
+            return new HtmxResponseClientRefresh();
         }
-
-        return view('auction.auction-view', ['auction' => $auction]);
     }
 
+    public function edit(Request $request, Auction $auction)
+    {
+        $auctionTypes = AuctionType::cases();
+        $deliveryTypes = DeliveryType::cases();
+        return view('auction.auction-edit', compact('auction', 'auctionTypes', 'deliveryTypes'));
+    }
+
+    public function update(Request $request, Auction $auction)
+    {
+        //
+    }
     public function bid(Request $request, Auction $auction): Response
     {
         $isAuthenticated = Auth::check();
@@ -266,7 +288,7 @@ class AuctionController extends Controller
     public function getLimitedAuctions(): View
     {
         $auctions = Auction::where('status', 'Active')
-            ->where('end_time', '<', Carbon::now()->addDay())
+            ->where('end_time', '<', Carbon::now()->timezone('Europe/london')->addDay())
             ->withCount(['bids' => function ($query) {
                 $query->where('updated_at', '>=', Carbon::now()->subDay());
             }])

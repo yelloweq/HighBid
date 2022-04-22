@@ -1,18 +1,16 @@
-@props(['imageMatchingKey', 'auctionTypes', 'deliveryTypes'])
+@props(['auction', 'auctionTypes', 'deliveryTypes'])
 
 @php
-    if (!isset($imageMatchingKey)) {
-        $imageMatchingKey = Ramsey\Uuid\Uuid::uuid4()->toString();
-    }
+    $imageMatchingKey = Ramsey\Uuid\Uuid::uuid4()->toString();
 @endphp
 
-<form method="POST" action="{{ route('auction.store') }}" hx-post="{{ route('auction.store') }}" hx-swap="outerHTML"
-    hx-target="body" id="createAuctionForm">
+<form method="POST" hx-post="{{ route('auction.update', $auction) }}" hx-swap="outerHTML" hx-target="body"
+    id="createEditForm">
     @csrf
 </form>
 
-<input type="hidden" id="auctionCreateKey" name="auctionCreateKey" value="{{ $imageMatchingKey }}"
-    form="createAuctionForm">
+<input type="hidden" id="auctionCreateKey" name="auctionCreateKey"
+    value="{{ $auction->images()->first()?->image_matching_key ?: $imageMatchingKey }}" form="createAuctionForm">
 <div class="mb-4">
     <x-input-label for="title" :value="__('Title')" />
     <x-text-input id="title" name="title" type="text" class="mt-1 block w-full" required autofocus
@@ -90,14 +88,14 @@
         </x-tooltip>
     </div>
 
-    <x-flatpickr :min-date="today()" :max-date="today()->addMonths(2)" show-time altFormat="D J F h:i K" id="end_date" name="end_date"
+    <x-flatpickr :min-date="today()" :max-date="today()->addMonths(2)" show-time altFormat="D J F h:i K" id="end-time" name="end-time"
         class="mt-1 block font-normal text-md text-gray-300 bg-gray-800 rounded w-full" required autocomplete="End time"
         form="createAuctionForm" />
-    <x-input-error class="mt-2" :messages="$errors->get('end_date')" />
+    <x-input-error class="mt-2" :messages="$errors->get('end-time')" />
 </div>
 <div class="flex items-center justify-end mt-4">
     <x-primary-button form="createAuctionForm">
-        {{ __('Create') }}
+        {{ __('Edit') }}
     </x-primary-button>
 </div>
 
@@ -108,7 +106,9 @@
     <script type="text/javascript">
         var maxFilesizeVal = 12;
         var maxFilesVal = 20;
-
+        var auctionId = "{{ $auction->id }}";
+        var deleteImageUrl =
+            "{{ route('auction.images.delete', ['auction' => $auction->id, 'auctionImage' => '$auction']) }}";
         Dropzone.autoDiscover = false;
 
         $(document).ready(function() {
@@ -148,6 +148,20 @@
             error: function(file, response) {
                 $('#message').text('Something Went Wrong! ' + response);
                 return false;
+            }
+            init: function() {
+                this.on("success", function(file, response) {
+                    file.serverId = response.id; // Save the id returned from the server on upload
+                });
+                this.on("removedfile", function(file) {
+                    if (file.serverId) {
+                        var deleteURL =
+                            axios.post(
+                                deleteURL, {
+                                    id: file.serverId
+                                }); // Use Axios or similar to send a delete request
+                    }
+                });
             }
         };
     </script>

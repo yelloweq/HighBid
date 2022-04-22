@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Auction;
 use App\Models\AuctionImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -14,20 +15,17 @@ class AuctionImageController extends Controller
      */
     public function store(Request $request)
     {
+        $validatedData = $request->validate([
+            'imageMatchingKey' => 'required',
+            'file' => 'required|array',
+        ]);
         try {
-            if (!$request->hasFile('file') || empty($request->imageMatchingKey)) {
-                return response()->json(['error' => 'Upload failed. Please try again later.']);
-            }
-
-            Log::info('imageMatchingKey: ' . $request->imageMatchingKey);
-
             foreach ($request->file('file') as $file) {
                 Log::info('foreach image: ' . $file->getClientOriginalName());
                 $image = Image::make($file->getRealPath())->resize(null, 1000, function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
                 });
-                // dd($image->exif());
                 Log::info('foreach image resized');
 
                 $imageHash = md5_file($file->getRealPath());
@@ -38,23 +36,32 @@ class AuctionImageController extends Controller
                     Log::error('Error encoding metadata: ' . json_last_error_msg());
                     $metadata = null;
                 }
-                // dd($image->exif());
-                $image->save(storage_path('app/public/' . $imagePath));
+
                 AuctionImage::create([
                     'path' => $imagePath,
                     'image_matching_key' => $request->imageMatchingKey,
                     'user_id' => $request->user()->id,
                     'metadata' => $metadata,
                 ]);
-                Log::info(('metadata: ' . $metadata));
+                $image->save(storage_path('app/public/' . $imagePath));
                 Log::info('Image saved to database.');
             }
-
-            return response()->json(['success' => 'uploaded successfully']);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Upload failed. Error: ' . $e->getMessage());
-            return response()->json(['error' => 'Upload failed. Please try again later.']);
+            return response()->json(['error' => 'Upload failed. Please try again later.'], 500);
         }
+
+        return response()->json(['success' => 'uploaded successfully']);
+    }
+
+    public function delete(Request $request, Auction $auction, AuctionImage $image)
+    {
+        if ($auction->user_id !== $request->user()->id) {
+            return response()->json(['error' => 'You are not authorized to delete this image.'], 403);
+        }
+
+        $image->delete();
+        return response()->json(['success' => 'Image deleted successfully']);
     }
 
     private function extractRelevantExifData($exifRaw)

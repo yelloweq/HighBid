@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c22c004015df7d50b2e690834d74c1bb",
+    "content-hash": "ad047d7d968c2dc78b0ca4241d37e40a",
     "packages": [
         {
             "name": "akaunting/laravel-money",
@@ -2360,6 +2360,71 @@
                 }
             ],
             "time": "2024-01-28T23:22:08+00:00"
+        },
+        {
+            "name": "mauricius/laravel-htmx",
+            "version": "v0.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mauricius/laravel-htmx.git",
+                "reference": "242444dcd504087b46a7cf09276f2f568baaea75"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mauricius/laravel-htmx/zipball/242444dcd504087b46a7cf09276f2f568baaea75",
+                "reference": "242444dcd504087b46a7cf09276f2f568baaea75",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "illuminate/contracts": "^9.0|^10.0|^11.0",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "nunomaduro/collision": "^6.0|^7.0|^8.1",
+                "orchestra/testbench": "^7.0|^8.0|^9.0",
+                "phpunit/phpunit": "^9.5|^10.0",
+                "spatie/phpunit-snapshot-assertions": "^4.2|^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Mauricius\\LaravelHtmx\\LaravelHtmxServiceProvider"
+                    ],
+                    "aliases": {
+                        "LaravelHtmx": "Mauricius\\LaravelHtmx\\Facades\\LaravelHtmx"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Mauricius\\LaravelHtmx\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "mauricius",
+                    "email": "maurizio.bonani@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Laravel helper library for Htmx",
+            "homepage": "https://github.com/mauricius/laravel-htmx",
+            "keywords": [
+                "htmx",
+                "laravel",
+                "laravel-htmx"
+            ],
+            "support": {
+                "issues": "https://github.com/mauricius/laravel-htmx/issues",
+                "source": "https://github.com/mauricius/laravel-htmx/tree/v0.6.0"
+            },
+            "time": "2024-03-19T15:23:55+00:00"
         },
         {
             "name": "moneyphp/money",
@@ -7146,16 +7211,16 @@
         },
         {
             "name": "mockery/mockery",
-            "version": "1.6.7",
+            "version": "1.6.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mockery/mockery.git",
-                "reference": "0cc058854b3195ba21dc6b1f7b1f60f4ef3a9c06"
+                "reference": "81a161d0b135df89951abd52296adf97deb0723d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mockery/mockery/zipball/0cc058854b3195ba21dc6b1f7b1f60f4ef3a9c06",
-                "reference": "0cc058854b3195ba21dc6b1f7b1f60f4ef3a9c06",
+                "url": "https://api.github.com/repos/mockery/mockery/zipball/81a161d0b135df89951abd52296adf97deb0723d",
+                "reference": "81a161d0b135df89951abd52296adf97deb0723d",
                 "shasum": ""
             },
             "require": {
@@ -7167,8 +7232,8 @@
                 "phpunit/phpunit": "<8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^8.5 || ^9.6.10",
-                "symplify/easy-coding-standard": "^12.0.8"
+                "phpunit/phpunit": "^8.5 || ^9.6.17",
+                "symplify/easy-coding-standard": "^12.1.14"
             },
             "type": "library",
             "autoload": {
@@ -7225,7 +7290,7 @@
                 "security": "https://github.com/mockery/mockery/security/advisories",
                 "source": "https://github.com/mockery/mockery"
             },
-            "time": "2023-12-10T02:24:34+00:00"
+            "time": "2024-03-21T18:34:15+00:00"
         },
         {
             "name": "myclabs/deep-copy",

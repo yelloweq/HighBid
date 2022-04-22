@@ -33,13 +33,14 @@ class EndAuction extends Command
      */
     public function handle()
     {
-        $now = Carbon::now();
-        $auctionIds = Auction::with('bids', 'seller', 'winner')
+        $now = Carbon::now()->timezone('Europe/London');
+        $auctionIds = Auction::with('bids', 'seller')
             ->where('status', AuctionStatus::ACTIVE)
             ->where('end_time', '<=', $now)
             ->pluck('id');
 
-    
+        Log::info("auctions to end: " . $auctionIds->count());
+
         foreach ($auctionIds as $auctionId) {
             if (Cache::add("processing_auction_{$auctionId}", true, 120)) {  // Lock for 2 minutes
                 $auction = Auction::find($auctionId);
@@ -58,7 +59,7 @@ class EndAuction extends Command
         $winner = $auction->bids()->orderBy('current_amount', 'desc')->first();
         if (!$winner) {
             Log::error("auction {$auction->id}: no winner");
-            $auction->update(['status' => AuctionStatus::CLOSED]);
+            $auction->update(['status' => AuctionStatus::PROCCESSING]);
             $auction->save();
             return;
         }

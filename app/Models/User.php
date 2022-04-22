@@ -24,6 +24,9 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'stripe_customer_id',
+        'stripe_connect_id',
+        'stripe_account_id',
     ];
 
     /**
@@ -70,5 +73,10 @@ class User extends Authenticatable
     public function ratings(): HasMany
     {
         return $this->hasMany(Rating::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'customer_id', 'id');
     }
 }

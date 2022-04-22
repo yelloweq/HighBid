@@ -15,6 +15,7 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "mauricius/laravel-htmx": "^0.6.0",
         "munafio/chatify": "^1.6",
         "ramsey/uuid": "^4.7",
         "stripe/stripe-php": "^13.14"
@@ -24,7 +25,7 @@
         "laravel/breeze": "^1.27",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",
-        "mockery/mockery": "^1.4.4",
+        "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^7.0",
         "phpunit/phpunit": "^10.1",
         "spatie/laravel-ignition": "^2.0"
