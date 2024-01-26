@@ -42,4 +42,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Get the auctions for the user.
+     */
+    public function auctions()
+    {
+        return $this->hasMany(Auction::class, 'seller_id');
+    }
+
+    /**
+     * Get the bids for the user.
+     */
+    public function bids()
+    {
+        return $this->hasMany(Bid::class, 'bidder_id');
+    }
 }

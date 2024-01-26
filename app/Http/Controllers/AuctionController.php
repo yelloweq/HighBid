@@ -19,19 +19,6 @@ class AuctionController extends Controller
      */
     public function create(CreateAuctionRequest $request): View
     {
-        //fix auth check and display error correctly
-        // if (!Auth::check()) {
-        //     return view('components.auction-create-fail', [
-        //         'errors' => collect(['Authentication error', 'You must be logged in to create an auction.'])
-        //     ]);
-        // }
-        $data = $request->validated();
-
-        if (!$data) {
-            return '<h1>ERROR</h1>';
-            //return view('components.auction-create-fail');
-        }
-
         $auction = Auction::create([
             'title' => $request->input('title'),
             'description' => $request->input('description'),
@@ -39,12 +26,19 @@ class AuctionController extends Controller
             'type' => $request->input('auction-type'),
             'price' => $request->input('price'),
             'delivery_type' => $request->input('delivery-type'),
-            'seller_id' => $request->user() ? $request->user()->id : Auth::id(),
+            'seller_id' => $request->user()->id ?? Auth::id(),
             'start_time' => $request->input('start-time'),
             'end_time' => $request->input('end-time'),
         ]);
-
-        return view('components.auction-create-success');
+        
+        // change this to show individual auction page of the created auction
+        if ($request->header('HX-Request')) {
+            return view('auction.product-page', [
+                'auction' => $auction,
+            ]); 
+        }
+        
+        return redirect()->route('auctions');
     }
 
     /**

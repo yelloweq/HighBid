@@ -42,9 +42,9 @@ class Auction extends Model
         'delivery_type' => DeliveryType::class
     ];
 
-    public function seller(): HasOne
+    public function seller(): BelongsTo
     {
-        return $this->hasOne(User::class,'id','seller_id');
+        return $this->belongsTo(User::class,'id','seller_id');
     }
 
     public function winner(): HasOne

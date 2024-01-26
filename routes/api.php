@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuctionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,5 +19,3 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-
-Route::post('/auction/create', [AuctionController::class, 'create'])->name('auction.create');

@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Enums\DeliveryType;
 use App\Enums\AuctionType;
+use App\Http\Controllers\AuctionController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -29,6 +31,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::post('/auction/create', [AuctionController::class, 'create'])->name('auction.create');
+
 });
+
+
 
 require __DIR__.'/auth.php';
