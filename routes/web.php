@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Enums\DeliveryType;
 use App\Enums\AuctionType;
 use App\Http\Controllers\AuctionController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,22 +18,24 @@ use App\Http\Controllers\AuctionController;
 |
 */
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::get('/', function () {
-    $deliveryTypes = DeliveryType::cases();
-    $auctionTypes = AuctionType::cases();
-    return view('welcome', compact('deliveryTypes', 'auctionTypes'));
-})->name('auctions');
+Route::get('/', [AuctionController::class, 'view_all'])->name('auctions');
+// create controllers for info pages.
+Route::get('/about', [AuctionController::class, 'view_all'])->name('about');
+Route::get('/faq', [AuctionController::class, 'view_all'])->name('faq');
+Route::get('/auction/{auction}', [AuctionController::class, 'view'])->name('auction.view');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'view'])->name('dashboard');
+    
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::post('/auction/create', [AuctionController::class, 'create'])->name('auction.create');
+    Route::post('/auction', [AuctionController::class, 'store'])->name('auction.store');
+    Route::get('/auction', [AuctionController::class, 'create'])->name('auction.create');
+
+    // messages controller needed or package
+    Route::get('/messages', [AuctionController::class, 'view_all'])->name('messages');
 
 });
 

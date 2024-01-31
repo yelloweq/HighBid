@@ -18,11 +18,26 @@
                     <x-nav-link :href="route('auctions')" :active="request()->routeIs('auctions')">
                         {{ __('Auctions') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('messages')" :active="request()->routeIs('messages')">
+                        {{ __('Messages') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('about')" :active="request()->routeIs('about')">
+                        {{ __('About') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('faq')" :active="request()->routeIs('faq')">
+                        {{ __('FAQ') }}
+                    </x-nav-link>
                 </div>
             </div>
 
+            
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="sm:-my-px sm:ms-10 sm:flex h-full">
+                    <x-nav-link :href="route('auction.create')" :active="request()->routeIs('auction.create')" >
+                        {{ __('Create Auction') }}
+                    </x-nav-link>
+            </div>
                 @auth
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -76,6 +91,16 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+        </div>
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('auctions')" :active="request()->routeIs('auctions')">
+                {{ __('Auctions') }}
+            </x-responsive-nav-link>
+        </div>
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('auction.create')" :active="request()->routeIs('auction.create')">
+                {{ __('Create Auction') }}
             </x-responsive-nav-link>
         </div>
 
