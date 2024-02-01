@@ -11,6 +11,8 @@ class DashboardController extends Controller
      */
     public function view(Request $request)
     {
-        return view('dashboard');
+        $auctions = $request->user()->auctions;
+
+        return view('dashboard', ['auctions' => $auctions]);
     }
 }

@@ -4,9 +4,7 @@
     hx-post="{{ route('auction.create') }}" 
     hx-swap="outerHTML" 
     hx-target="main"
-    onHxSuccess="handleSuccess"
     >
-    
     @csrf
     <div>
         <x-input-label for="title" :value="__('Title')" />
