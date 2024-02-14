@@ -11,7 +11,7 @@ class DashboardController extends Controller
      */
     public function view(Request $request)
     {
-        $auctions = $request->user()->auctions;
+        $auctions = $request->user()->auctions()->paginate($request->input('per_page', 25));
 
         return view('dashboard', ['auctions' => $auctions]);
     }

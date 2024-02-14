@@ -1,6 +1,6 @@
-import './bootstrap';
-import htmx from 'htmx.org';
 import Alpine from 'alpinejs';
+import htmx from 'htmx.org';
+import './bootstrap';
 
 window.Alpine = Alpine;
 window.htmx = htmx;

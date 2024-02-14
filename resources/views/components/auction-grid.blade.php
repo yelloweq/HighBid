@@ -1,5 +1,8 @@
-<div class="p-6 text-gray-900 dark:text-gray-100 flex flex-wrap flex-grow-0 justify-start align-middle gap-3">
+<ul class="w-full">
     @foreach ($auctions as $auction)
+    <li>
         <x-auction-card :auction=$auction />
+    </li>
     @endforeach
-</div>  
+    {{ $auctions->links('vendor.pagination.custom') }}
+</ul>  

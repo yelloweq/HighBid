@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Auction extends Model
 {
@@ -19,7 +20,6 @@ class Auction extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'auction_id',
         'title',
         'description',
         'features',
@@ -57,5 +57,15 @@ class Auction extends Model
     public function winner(): HasOne
     {
         return $this->hasOne(User::class,'id','winner_id');
+    }
+
+    public function bids(): HasMany
+    {
+        return $this->hasMany(Bid::class);
+    }
+
+    public function timeRemaining(): string
+    {
+        return $this->end_time > now() ? 'Ended' : $this->end_time->diffForHumans(now());
     }
 }

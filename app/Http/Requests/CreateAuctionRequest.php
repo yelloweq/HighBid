@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 
 class CreateAuctionRequest extends FormRequest
 {
@@ -34,10 +35,10 @@ class CreateAuctionRequest extends FormRequest
             'description' => 'required|string',
             'price' => 'required|numeric',
             'features' => 'required|string',
+            'file' => 'mimes:png,jpg,jpeg,gif|max:5000',
             'auction-type' => [new Enum(AuctionType::class)],
             'delivery-type' => [new Enum(DeliveryType::class)],
-            'start-time' => 'required|date',
-            'end-time' => 'required|date|after:start-time',
+            'end-time' => 'required|date|after:'. Carbon::now(),
         ];
     }
 

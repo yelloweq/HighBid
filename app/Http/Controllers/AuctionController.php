@@ -12,6 +12,7 @@ use App\Models\Auction;
 use App\Http\Requests\CreateAuctionRequest;
 use App\Enums\DeliveryType;
 use App\Enums\AuctionType;
+use Illuminate\Support\Carbon;
 
 class AuctionController extends Controller
 {
@@ -29,7 +30,12 @@ class AuctionController extends Controller
      */
     public function view_all(Request $request): View
     {
-        $auctions = Auction::all();
+
+        $auctions = Auction::query()
+        ->when($request->search, fn ($q, $search) => 
+        $q->where('title', 'like', "%$search%"))
+        ->paginate($request->input('per_page', 25))
+        ->appends($request->all());
         return view('auction.auction-view-all', ['auctions' => $auctions]); 
     }
 
@@ -59,57 +65,10 @@ class AuctionController extends Controller
             'price' => $request->input('price'),
             'delivery_type' => $request->input('delivery-type'),
             'seller_id' => $request->user()->id ?? Auth::id(),
-            'start_time' => $request->input('start-time'),
+            'start_time' => Carbon::now(),
             'end_time' => $request->input('end-time'),
         ]);
         
         return view('auction.auction-view', ['auction' => $auction]);
     }
-
-    // /**
-    //  * Display the user's auction form.
-    //  */
-    // public function edit(Request $request): View
-    // {
-    //     return view('profile.edit', [
-    //         'user' => $request->user(),
-    //     ]);
-    // }
-
-    // /**
-    //  * Update the user's auction information.
-    //  */
-    // public function update(Request $request): RedirectResponse
-    // {
-    //     $request->user()->fill($request->validated());
-
-    //     if ($request->user()->isDirty('email')) {
-    //         $request->user()->email_verified_at = null;
-    //     }
-
-    //     $request->user()->save();
-
-    //     return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    // }
-
-    // /**
-    //  * Delete the user's auction.
-    //  */
-    // public function destroy(Request $request): RedirectResponse
-    // {
-    //     $request->validateWithBag('userDeletion', [
-    //         'password' => ['required', 'current_password'],
-    //     ]);
-
-    //     $user = $request->user();
-
-    //     Auth::logout();
-
-    //     $user->delete();
-
-    //     $request->session()->invalidate();
-    //     $request->session()->regenerateToken();
-
-    //     return Redirect::to('/');
-    // }
 }
