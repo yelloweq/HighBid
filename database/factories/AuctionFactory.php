@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\AuctionStatus;
 use App\Enums\AuctionType;
 use App\Enums\DeliveryType;
 use App\Models\User;
@@ -31,5 +32,11 @@ class AuctionFactory extends Factory
             'start_time' => fake()->dateTimeBetween('-1 month', 'now'),
             'end_time' => fake()->dateTimeBetween('now', '+1 month'),
         ];
+    }
+    public function withStatus(string $status): self
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => $status,
+        ]);
     }
 }

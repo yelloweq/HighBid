@@ -2,18 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Enums\AuctionStatus;
-use App\Models\Auction;
+use App\Models\Category;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class AuctionSeeder extends Seeder
+class CategorySeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Auction::factory()->times(100)->create(['status' => AuctionStatus::ACTIVE]);
+        Category::factory()->times(10)->create();
     }
 }

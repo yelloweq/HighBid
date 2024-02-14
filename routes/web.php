@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Enums\DeliveryType;
 use App\Enums\AuctionType;
 use App\Http\Controllers\AuctionController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 
 /*
@@ -23,6 +24,9 @@ Route::get('/', [AuctionController::class, 'view_all'])->name('auctions');
 Route::get('/about', [AuctionController::class, 'view_all'])->name('about');
 Route::get('/faq', [AuctionController::class, 'view_all'])->name('faq');
 Route::get('/auction/{auction}', [AuctionController::class, 'view'])->name('auction.view');
+
+Route::post('/auction/search', [AuctionController::class, 'search'])->name('auction.search');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'view'])->name('dashboard');

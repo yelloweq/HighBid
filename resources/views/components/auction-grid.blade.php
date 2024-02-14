@@ -1,4 +1,4 @@
-<ul class="w-full">
+<ul class="w-full" hx-auction-grid>
     @foreach ($auctions as $auction)
     <li>
         <x-auction-card :auction=$auction />

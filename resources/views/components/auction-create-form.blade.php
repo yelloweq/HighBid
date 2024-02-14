@@ -22,11 +22,7 @@
         <x-text-input id="features" name="features" type="text" class="mt-1 block w-full" required autocomplete="Features" />
         <x-input-error class="mt-2" :messages="$errors->get('features')" />
     </div>
-    <div>
-        <x-input-label for="file" :value="__('Images')" />
-        <x-text-input id="file" name="file" type="file" class="mt-1 block w-full" required autocomplete="Images" />
-        <x-input-error class="mt-2" :messages="$errors->get('file')" />
-    </div>
+
     <div>
         <div class="flex gap-2 align-middle">
             <x-input-label for="auction-type" :value="__('Type of auction')" />
@@ -38,7 +34,7 @@
             </x-tooltip>
         </div>
         
-        <x-select-input id="auction-type" name="auction-type" class="mt-1 block w-full" required>
+        <x-select-input id="auction-type" name="auction-type" class="mt-1 block w-full z-50" required>
             @foreach ($auctionTypes as $auctionType)
                 <option value="{{ $auctionType }}">{{ $auctionType->name }}</option>
             @endforeach

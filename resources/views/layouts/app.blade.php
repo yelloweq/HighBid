@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'BidUp') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -19,13 +19,9 @@
         />
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <script
-        type="module"
-        src="https://unpkg.com/@material-tailwind/html@latest/scripts/tooltip.js"
-        ></script>
     </head>
-    <body class="font-sans antialiase bg-bg-primary">
-        <div class="min-h-screen" hx-boost="true">
+    <body class="font-sans antialiase bg-bg-primary" hx-boost="true">
+        <div class="min-h-screen" >
             @include('layouts.navigation')
 
             <!-- Page Heading -->
@@ -42,6 +38,17 @@
                 {{ $slot }}
             </main>
         </div>
+
+        <script
+        type="module"
+        src="https://unpkg.com/@material-tailwind/html@latest/scripts/tooltip.js"
+        ></script>
+        <script
+        type="module"
+        src="https://unpkg.com/@material-tailwind/html@latest/scripts/popover.js"
+        ></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://unpkg.com/@material-tailwind/html@latest/scripts/collapse.js"></script>
     </body>
 </html>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+

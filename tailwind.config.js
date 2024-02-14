@@ -19,10 +19,15 @@ export default withMT({
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                'bg-primary': '#0F0F0F',
+                'bg-primary': '#231F20',
+                'gbg-primary': '#0F0F0F',
+                'primary-new': '#EFE6DD',
+                'blue-accent': '#7EBDC2',
+                'vanilla-accent': '#F3DFA2',
+                'red-accent': '#BB4430',
             }
         },
     },
-
+    darkMode: 'class',
     plugins: [forms],
 });

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 class Auction extends Model
 {
@@ -66,6 +67,14 @@ class Auction extends Model
 
     public function timeRemaining(): string
     {
-        return $this->end_time > now() ? 'Ended' : $this->end_time->diffForHumans(now());
+        if ($this->end_time->greaterThan(Carbon::now())) {
+            $interval = Carbon::now()->diff($this->end_time);
+            if ($interval->days <= 0) {
+                return $interval->format('%h hours, %i minutes, %s seconds');
+            }
+            return '';
+        } else {
+            return 'Ended';
+        }
     }
 }

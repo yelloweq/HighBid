@@ -12,6 +12,8 @@ use App\Models\Auction;
 use App\Http\Requests\CreateAuctionRequest;
 use App\Enums\DeliveryType;
 use App\Enums\AuctionType;
+use App\Models\Category;
+use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 
 class AuctionController extends Controller
@@ -30,14 +32,49 @@ class AuctionController extends Controller
      */
     public function view_all(Request $request): View
     {
+        $categories = Category::getCategories();
+        $deliveryTypes = DeliveryType::cases();
 
         $auctions = Auction::query()
         ->when($request->search, fn ($q, $search) => 
         $q->where('title', 'like', "%$search%"))
+        ->when($request->category, fn ($q, $category) => 
+        $q->whereCategoryId($category))
+        ->when($request->status == 'Closed', fn ($q) => 
+        $q->where('status', 'Closed'), fn ($q) => 
+        $q->where('status', 'Active'))
         ->paginate($request->input('per_page', 25))
         ->appends($request->all());
-        return view('auction.auction-view-all', ['auctions' => $auctions]); 
+        return view('auction.auction-view-all', [
+            'auctions' => $auctions,
+            'categories' => $categories,
+            'deliveryTypes' => $deliveryTypes
+        ]); 
     }
+
+    /**
+     * Search for auctions.
+     */
+    public function search(Request $request): Response
+    {
+        $auctions = Auction::query()
+        ->when($request->search, fn ($q, $search) => 
+        $q->where('title', 'like', "%$search%"))
+        ->when($request->category, fn ($q, $category) => 
+        $q->whereCategoryId($category))
+        ->when($request->status, fn ($q, $status) => 
+        $q->where('status', $status))
+        ->when($request->delivery, fn ($q, $deliveryType) => 
+        $q->where('delivery_type', $deliveryType))
+        ->paginate($request->input('per_page', 25))
+        ->appends($request->all());
+
+        $newPath = route('auctions') . '?' . http_build_query($request->all());
+
+        return response()->view('components.auction-grid', ['auctions' => $auctions])
+            ->header('HX-Push-Url', $newPath ); 
+    }
+
 
     /**
      * Display the auction create form.
