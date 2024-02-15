@@ -17,8 +17,10 @@
         crossorigin="anonymous"
         referrerpolicy="no-referrer"
         />
+        <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @include('flatpickr::components.style')
     </head>
     <body class="font-sans antialiase bg-bg-primary" hx-boost="true">
         <div class="min-h-screen" >
@@ -34,7 +36,7 @@
             @endif
 
             <!-- Page Content -->
-            <main>
+            <main hx-main-page>
                 {{ $slot }}
             </main>
         </div>
@@ -49,6 +51,7 @@
         ></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script src="https://unpkg.com/@material-tailwind/html@latest/scripts/collapse.js"></script>
+        @stack('scripts')
     </body>
 </html>
 

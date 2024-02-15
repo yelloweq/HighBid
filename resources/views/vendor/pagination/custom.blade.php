@@ -1,10 +1,10 @@
 
 @if ($paginator->hasPages())
-<div class="flex items-center gap-4" hx-target="body"
+<div class="flex items-center gap-4 justify-center align-middle" hx-target="body"
 hx-swap="outerHTML scroll:top"
 >
     <button @if ($paginator->onFirstPage()) disabled @endif
-      class="flex items-center gap-2 px-6 py-3 font-sans text-xs font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-full select-none hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+      class="flex items-center gap-2 px-6 py-3 font-sans text-xs font-bold text-center text-white uppercase align-middle transition-all rounded-full select-none hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
       type="button"
       hx-get="{{ $paginator->previousPageUrl() }}">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
@@ -26,7 +26,7 @@ hx-swap="outerHTML scroll:top"
                     @foreach ($element as $page => $url)
                         @if ($page == $paginator->currentPage())
                             <button
-                            class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none bg-gray-900 rounded-full text-center align-middle font-sans text-xs font-medium uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                            class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none bg-primary-new rounded-full text-center align-middle font-sans text-xs font-medium uppercase text-bg-primary shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                             type="button">
                                 <span class="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
                                     {{ $page }}
@@ -34,7 +34,7 @@ hx-swap="outerHTML scroll:top"
                         </button>
                         @else
                             <button
-                                class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-full text-center align-middle font-sans text-xs font-medium uppercase text-gray-900 transition-all hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                                class="relative h-10 max-h-[40px] w-10 max-w-[40px] select-none rounded-full text-center align-middle font-sans text-xs font-medium uppercase text-primary-new transition-all hover:text-bg-primary active:text-bg-primary hover:bg-primary-new active:bg-primary-new disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                                 type="button"
                                 hx-get="{{ $url }}"
                                 >
@@ -49,7 +49,7 @@ hx-swap="outerHTML scroll:top"
     </div>
 
     <button @if (!$paginator->hasMorePages()) disabled @endif
-      class="flex items-center gap-2 px-6 py-3 font-sans text-xs font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-full select-none hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+      class="flex items-center gap-2 px-6 py-3 font-sans text-xs font-bold text-center text-primary-new uppercase align-middle transition-all rounded-full select-none hover:bg-gray-900/10 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
       type="button"
       hx-get="{{ $paginator->nextPageUrl() }}">
       Next

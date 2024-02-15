@@ -12,9 +12,12 @@ use App\Models\Auction;
 use App\Http\Requests\CreateAuctionRequest;
 use App\Enums\DeliveryType;
 use App\Enums\AuctionType;
+use App\Jobs\ProcessAuctionImageData;
+use App\Jobs\ProcessCreatedAuction;
 use App\Models\Category;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
+use Ramsey\Uuid\Uuid;
 
 class AuctionController extends Controller
 {
@@ -35,14 +38,7 @@ class AuctionController extends Controller
         $categories = Category::getCategories();
         $deliveryTypes = DeliveryType::cases();
 
-        $auctions = Auction::query()
-        ->when($request->search, fn ($q, $search) => 
-        $q->where('title', 'like', "%$search%"))
-        ->when($request->category, fn ($q, $category) => 
-        $q->whereCategoryId($category))
-        ->when($request->status == 'Closed', fn ($q) => 
-        $q->where('status', 'Closed'), fn ($q) => 
-        $q->where('status', 'Active'))
+        $auctions = Auction::where('status', 'Active')
         ->paginate($request->input('per_page', 25))
         ->appends($request->all());
         return view('auction.auction-view-all', [
@@ -83,9 +79,12 @@ class AuctionController extends Controller
     {
         $deliveryTypes = DeliveryType::cases();
         $auctionTypes = AuctionType::cases();
+
+        $imageMatchingKey = Uuid::uuid4()->toString();
         return view('auction.auction-create', [
             'deliveryTypes' => $deliveryTypes,
-            'auctionTypes' => $auctionTypes
+            'auctionTypes' => $auctionTypes,
+            'imageMatchingKey' => $imageMatchingKey
         ]); 
     }
 
@@ -94,6 +93,7 @@ class AuctionController extends Controller
      */
     public function store(CreateAuctionRequest $request): View
     {
+        //need to add multi image upload
         $auction = Auction::create([
             'title' => $request->input('title'),
             'description' => $request->input('description'),
@@ -105,6 +105,13 @@ class AuctionController extends Controller
             'start_time' => Carbon::now(),
             'end_time' => $request->input('end-time'),
         ]);
+
+        //dispatch job to process the auction
+        // ProcessCreatedAuction::dispatch($auction);
+        
+        //change below function to take all the images
+
+        // ProcessAuctionImageData::dispatch($request->file('image'));
         
         return view('auction.auction-view', ['auction' => $auction]);
     }

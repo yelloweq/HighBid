@@ -10,12 +10,12 @@
                 class="block font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-blue-gray-900">
                 Search
             </h5>
-            <x-text-input id="search" name="search" type="text" class="mt-1 block w-full" autocomplete="false" />
+            <x-text-input light="true" id="search" name="search" type="text" class="mt-1 block w-full" autocomplete="false" />
         <x-input-error class="mt-2" :messages="$errors->get('search')" />
         </div>
 
         
-        @if(! empty($categories))
+        @if(! empty($categories) && count($categories) > 0)
         <div class="p-2 mb-2">
             <h5
                 class="block font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-blue-gray-900">
@@ -82,7 +82,7 @@
 
 
 
-        @if(! empty($deliveryTypes))
+        @if(! empty($deliveryTypes) && count($deliveryTypes) > 0)
         <div class="p-2 mb-4">
             <h5
                 class="block font-sans text-xl antialiased font-semibold leading-snug tracking-normal text-blue-gray-900">
