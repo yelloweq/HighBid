@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\MatchUploadedImagesToAuction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -105,6 +106,10 @@ class AuctionController extends Controller
             'start_time' => Carbon::now(),
             'end_time' => $request->input('end-time'),
         ]);
+
+        if (!empty($request->auctionCreateKey)){
+            MatchUploadedImagesToAuction::dispatch($auction, $request->auctionCreateKey);
+        }
 
         //dispatch job to process the auction
         // ProcessCreatedAuction::dispatch($auction);

@@ -3,7 +3,7 @@
     @csrf
 </form>
 
-<input type="hidden" id="auctionCreateKey" name="key" value="{{ $imageMatchingKey }}" form="createAuctionForm">
+<input type="hidden" id="auctionCreateKey" name="auctionCreateKey" value="{{ $imageMatchingKey }}" form="createAuctionForm">
 <div class="mb-4">
     <x-input-label for="title" :value="__('Title')" />
     <x-text-input id="title" name="title" type="text" class="mt-1 block w-full" required autofocus
