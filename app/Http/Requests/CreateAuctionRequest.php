@@ -33,12 +33,12 @@ class CreateAuctionRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|numeric',
+            'price' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
             'features' => 'required|string',
             'file' => 'mimes:png,jpg,jpeg,gif|max:5000',
             'auction-type' => [new Enum(AuctionType::class)],
             'delivery-type' => [new Enum(DeliveryType::class)],
-            'end-time' => 'required|date|after:'. Carbon::now(),
+            'end-time' => 'required|date|after:' . Carbon::now(),
         ];
     }
 
@@ -55,12 +55,11 @@ class CreateAuctionRequest extends FormRequest
                 response()->json(['errors' => $validator->errors()], 422)
             );
         }
-        
+
         return response()->view('components.auction-create-form', [
             'auctionTypes' => AuctionType::cases(),
             'deliveryTypes' => DeliveryType::cases(),
             'errors' => $validator->errors(),
         ], 422);
     }
-
 }

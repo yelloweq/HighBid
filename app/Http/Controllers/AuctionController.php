@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Akaunting\Money\Money;
 use App\Jobs\MatchUploadedImagesToAuction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,7 +29,8 @@ class AuctionController extends Controller
      */
     public function view(Auction $auction): View
     {
-        return view('auction.auction-view', ['auction' => $auction]); 
+        $auction->load('bids');
+        return view('auction.auction-view', ['auction' => $auction, 'seller' => $auction->seller()->first()]);
     }
 
     /**
@@ -40,13 +42,13 @@ class AuctionController extends Controller
         $deliveryTypes = DeliveryType::cases();
 
         $auctions = Auction::where('status', 'Active')
-        ->paginate($request->input('per_page', 25))
-        ->appends($request->all());
+            ->paginate($request->input('per_page', 25))
+            ->appends($request->all());
         return view('auction.auction-view-all', [
             'auctions' => $auctions,
             'categories' => $categories,
             'deliveryTypes' => $deliveryTypes
-        ]); 
+        ]);
     }
 
     /**
@@ -55,21 +57,21 @@ class AuctionController extends Controller
     public function search(Request $request): Response
     {
         $auctions = Auction::query()
-        ->when($request->search, fn ($q, $search) => 
-        $q->where('title', 'like', "%$search%"))
-        ->when($request->category, fn ($q, $category) => 
-        $q->whereCategoryId($category))
-        ->when($request->status, fn ($q, $status) => 
-        $q->where('status', $status))
-        ->when($request->delivery, fn ($q, $deliveryType) => 
-        $q->where('delivery_type', $deliveryType))
-        ->paginate($request->input('per_page', 25))
-        ->appends($request->all());
+            ->when($request->search, fn ($q, $search) =>
+            $q->where('title', 'like', "%$search%"))
+            ->when($request->category, fn ($q, $category) =>
+            $q->whereCategoryId($category))
+            ->when($request->status, fn ($q, $status) =>
+            $q->where('status', $status))
+            ->when($request->delivery, fn ($q, $deliveryType) =>
+            $q->where('delivery_type', $deliveryType))
+            ->paginate($request->input('per_page', 25))
+            ->appends($request->all());
 
         $newPath = route('auctions') . '?' . http_build_query($request->all());
 
         return response()->view('components.auction-grid', ['auctions' => $auctions])
-            ->header('HX-Push-Url', $newPath ); 
+            ->header('HX-Push-Url', $newPath);
     }
 
 
@@ -86,7 +88,7 @@ class AuctionController extends Controller
             'deliveryTypes' => $deliveryTypes,
             'auctionTypes' => $auctionTypes,
             'imageMatchingKey' => $imageMatchingKey
-        ]); 
+        ]);
     }
 
     /**
@@ -100,24 +102,56 @@ class AuctionController extends Controller
             'description' => $request->input('description'),
             'features' => $request->input('features'),
             'type' => $request->input('auction-type'),
-            'price' => $request->input('price'),
+            'price' => $request->input('price') * 100,
             'delivery_type' => $request->input('delivery-type'),
             'seller_id' => $request->user()->id ?? Auth::id(),
             'start_time' => Carbon::now(),
             'end_time' => $request->input('end-time'),
         ]);
 
-        if (!empty($request->auctionCreateKey)){
+        if (!empty($request->auctionCreateKey)) {
             MatchUploadedImagesToAuction::dispatch($auction, $request->auctionCreateKey);
         }
 
         //dispatch job to process the auction
         // ProcessCreatedAuction::dispatch($auction);
-        
+
         //change below function to take all the images
 
         // ProcessAuctionImageData::dispatch($request->file('image'));
-        
+
+        return view('auction.auction-view', ['auction' => $auction]);
+    }
+
+    public function bid(Request $request, Auction $auction): View
+    {
+        if ($auction->status !== 'Active' || $auction->end_time < Carbon::now()) {
+            return view('auction.auction-view', ['auction' => $auction, 'errors' => ['Auction is not active']]);
+        }
+        $currentHighestBidInPence = $auction->getHighestBid();
+
+        $validator = Validator::make($request->all(), [
+            'bid' => [
+                'required',
+                'numeric',
+                'regex:/^\d+(\.\d{1,2})?$/',
+                function ($attribute, $value, $fail) use ($currentHighestBidInPence) {
+                    if ($value * 100 <= $currentHighestBidInPence) {
+                        $fail($attribute . ' must be higher than ' . Money::GBP($currentHighestBidInPence));
+                    }
+                },
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            return view('auction.auction-view', ['auction' => $auction, 'errors' => $validator->errors()]);
+        }
+
+        $auction->bids()->create([
+            'amount' => $request->input('bid') * 100,
+            'user_id' => $request->user()->id ?? Auth::id(),
+        ]);
+
         return view('auction.auction-view', ['auction' => $auction]);
     }
 }

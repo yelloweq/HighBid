@@ -6,6 +6,7 @@ use App\Enums\DeliveryType;
 use App\Enums\AuctionType;
 use App\Http\Controllers\AuctionController;
 use App\Http\Controllers\AuctionImageController;
+use App\Http\Controllers\BidController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 
@@ -38,6 +39,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/auction', [AuctionController::class, 'store'])->name('auction.store');
     Route::get('/auction', [AuctionController::class, 'create'])->name('auction.create');
+    Route::post('/auction/{auction}', [AuctionController::class, 'bid'])->name('auction.bid');
 
     Route::post('/upload/images', [AuctionImageController::class, 'store'])->name('auction.images.store');
     // messages controller needed or package

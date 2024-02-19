@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\AuctionStatus;
 use App\Models\Auction;
 use App\Models\AuctionImage;
 use Illuminate\Bus\Queueable;
@@ -33,5 +34,8 @@ class MatchUploadedImagesToAuction implements ShouldQueue
     {
         AuctionImage::where('image_matching_key', $this->imageMatchingKey)
             ->update(['auction_id' => $this->auction->id]);
+
+        //dispatch event and get a job to process image data and update aucttion status
+        $this->auction->update(['status' => "Active"]);
     }
 }

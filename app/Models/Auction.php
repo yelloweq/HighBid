@@ -82,4 +82,9 @@ class Auction extends Model
             return 'Ended';
         }
     }
+
+    public function getHighestBid(): float
+    {
+        return $this->bids->max('amount') ?? $this->price;
+    }
 }
