@@ -16,8 +16,15 @@ class AuctionImage extends Model
      */
     protected $fillable = [
         'auction_id',
+        'user_id',
         'path',
         'image_matching_key',
+        'rekognition_labels',
+        'flagged'
+    ];
+
+    protected $casts = [
+        'flagged' => 'boolean',
     ];
 
     public function auction()

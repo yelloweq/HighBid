@@ -1,3 +1,11 @@
+@props(['imageMatchingKey', 'auctionTypes', 'deliveryTypes'])
+
+@php 
+    if (!isset($imageMatchingKey)) {
+        $imageMatchingKey = Ramsey\Uuid\Uuid::uuid4()->toString();
+    }
+@endphp
+
 <form method="POST" action="{{ route('auction.create') }}" hx-post="{{ route('auction.create') }}" hx-swap="outerHTML"
     hx-target="[hx-main-page]" id="createAuctionForm">
     @csrf
@@ -121,7 +129,6 @@
             uploadMultiple: true,
             acceptedFiles: ".jpeg,.jpg,.png,.webp",
             addRemoveLinks: true,
-            timeout: 60000,
             dictDefaultMessage: "Drop your files here or click to upload",
             dictFallbackMessage: "Your browser doesn't support drag and drop file uploads.",
             dictFileTooBig: "File is too big. Max filesize: " + maxFilesizeVal + "MB.",

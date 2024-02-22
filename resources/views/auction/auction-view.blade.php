@@ -14,12 +14,13 @@
 
                 
                 @foreach ($auction->images as $image)
-                <img src="{{ asset('images/'.$image->path) }}" alt="image" class="w-1/4">
+                <img src="{{ asset('storage/'.$image->path) }}" alt="image" class="w-1/4">
                 @endforeach
             </div>
             <form hx-post="{{ route('auction.bid', $auction) }}" hx-target="body" hx-swap="outerHTML" hx-boost="false">
                 @csrf
-                <input type="number" name="bid" placeholder="£" autocomplete="false" required pattern="^\d+(\.\d{1,2})?$" step="0.01">
+                <input type="number" name="bid" placeholder="£" autocomplete="false" required pattern="^\d+(\.\d{1,2})?$" step="0.01" 
+                @if($auction->end_time > now()) disabled @endif>
                 <x-primary-button>Place bid</x-primary-button>
             </form>
             @if ($errors->any())

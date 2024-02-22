@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Akaunting\Money\Money;
 use App\Jobs\MatchUploadedImagesToAuction;
+use App\Jobs\ProcessImageWithRekognition;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,7 @@ use App\Jobs\ProcessCreatedAuction;
 use App\Models\Category;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Ramsey\Uuid\Uuid;
 
 class AuctionController extends Controller
@@ -84,6 +86,7 @@ class AuctionController extends Controller
         $auctionTypes = AuctionType::cases();
 
         $imageMatchingKey = Uuid::uuid4()->toString();
+
         return view('auction.auction-create', [
             'deliveryTypes' => $deliveryTypes,
             'auctionTypes' => $auctionTypes,
@@ -110,8 +113,12 @@ class AuctionController extends Controller
         ]);
 
         if (!empty($request->auctionCreateKey)) {
-            MatchUploadedImagesToAuction::dispatch($auction, $request->auctionCreateKey);
+            Log::info('Dispatching job to match images to auction and process with rekognition');
+            MatchUploadedImagesToAuction::withChain([
+                new ProcessImageWithRekognition($auction)
+            ])->dispatch($auction, $request->auctionCreateKey);
         }
+        
 
         //dispatch job to process the auction
         // ProcessCreatedAuction::dispatch($auction);
