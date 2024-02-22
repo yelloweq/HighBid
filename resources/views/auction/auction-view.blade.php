@@ -5,7 +5,11 @@
             <div class="p-6 text-gray-900 dark:text-gray-100 text-wrap">
                 {{ $auction->title }}
                 {{ $auction->description }}
-                Current bid: @if ($auction->bids->count() <= 0) <x-money :amount="$auction->price" /> @else <x-money :amount="$auction->getHighestBid()" /> @endif
+                Current bid: 
+                @if ($auction->bids->count() <= 0) 
+                    <x-money :amount="$auction->price" /> 
+                @else 
+                    <x-money :amount="$auction->getHighestBid()" /> @endif
                 {{ $auction->end_time }}
                 {{ $auction->delivery_type }}
                 {{ $auction->auction_type }}

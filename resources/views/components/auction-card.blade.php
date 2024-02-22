@@ -1,6 +1,6 @@
 <div class="bg-red-500 hover:cursor-pointer mb-4 flex max-h-[200px]"
     hx-get="{{ route('auction.view', ['auction' => $auction]) }}"
-    hx-target="main"
+    hx-target="body"
     hx-swap="outerHTML"
     hx-push-url="true"
     >
