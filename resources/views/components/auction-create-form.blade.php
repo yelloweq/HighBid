@@ -37,7 +37,7 @@
     <input type="hidden" id="imageMatchingKey" name="imageMatchingKey" value="{{ $imageMatchingKey }}" form="myDragAndDropUploader">
 </form>
 
-<div id="message" class="text-bg-primary pb-4">
+<div id="message" class="text-white pb-4">
 
 </div>
 
@@ -71,12 +71,12 @@
 </div>
 <div class="mb-4">
     <div class="flex gap-2 align-middle">
-        <x-input-label for="price" :value="__('Starting price')" />
+        <x-input-label for="price" :value="__('Starting price (£)')" />
         <x-tooltip>
             {{ __('This is the starting bid of the auction, it is recommened to set it to the lowest value you\'d be happy to sell the item for.') }}
         </x-tooltip>
     </div>
-    <x-text-input id="price" name="price" type="number" class="mt-1 block w-full" required
+    <x-text-input id="price" name="price" type="text" class="mt-1 block w-full" required
         autocomplete="Starting price" form="createAuctionForm" />
     <x-input-error class="mt-2" :messages="$errors->get('price')" />
 </div>
@@ -129,7 +129,6 @@
             uploadMultiple: true,
             acceptedFiles: ".jpeg,.jpg,.png,.webp",
             addRemoveLinks: true,
-            previewContrainer: $('#image-previews');
             dictDefaultMessage: "Drop your files here or click to upload",
             dictFallbackMessage: "Your browser doesn't support drag and drop file uploads.",
             dictFileTooBig: "File is too big. Max filesize: " + maxFilesizeVal + "MB.",

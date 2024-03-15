@@ -28,10 +28,10 @@
                                 {{ __('Messages') }}
                             </x-nav-link>
                         @endauth
-                        <x-nav-link :href="route('about')" :active="request()->routeIs('about')">
+                        <x-nav-link :href="route('about')" :active="request()->routeIs('about')" hx-boost="false">
                             {{ __('About') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('faq')" :active="request()->routeIs('faq')">
+                        <x-nav-link :href="route('faq')" :active="request()->routeIs('faq')" hx-boost="false">
                             {{ __('FAQ') }}
                         </x-nav-link>
                     </div>

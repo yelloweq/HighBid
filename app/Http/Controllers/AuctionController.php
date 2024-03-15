@@ -13,6 +13,7 @@ use App\Models\Auction;
 use App\Http\Requests\CreateAuctionRequest;
 use App\Enums\DeliveryType;
 use App\Enums\AuctionType;
+use App\Jobs\SetAuctionLive;
 use App\Models\Category;
 use App\Models\Watcher;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -91,7 +92,7 @@ class AuctionController extends Controller
             'description' => $request->input('description'),
             'features' => $request->input('features'),
             'type' => $request->input('auction-type'),
-            'price' => $request->input('price') * 100,
+            'price' => ((float) $request->input('price')) * 100,
             'delivery_type' => $request->input('delivery-type'),
             'seller_id' => $request->user()->id ?? Auth::id(),
             'start_time' => Carbon::now(),
@@ -101,17 +102,10 @@ class AuctionController extends Controller
         if (!empty($request->auctionCreateKey)) {
             Log::info('Dispatching job to match images to auction and process with rekognition');
             MatchUploadedImagesToAuction::withChain([
-                new ProcessImageWithRekognition($auction)
+                new ProcessImageWithRekognition($auction),
+                new SetAuctionLive($auction)
             ])->dispatch($auction, $request->auctionCreateKey);
         }
-
-
-        //dispatch job to process the auction
-        // ProcessCreatedAuction::dispatch($auction);
-
-        //change below function to take all the images
-
-        // ProcessAuctionImageData::dispatch($request->file('image'));
 
         return view('auction.auction-view', ['auction' => $auction]);
     }
@@ -120,6 +114,10 @@ class AuctionController extends Controller
     {
         if ($auction->status !== 'Active' || $auction->end_time < Carbon::now()) {
             $errors = new \Illuminate\Support\MessageBag(['Auction has ended']);
+            return view('auction.auction-view', ['auction' => $auction, 'errors' => $errors]);
+        }
+        if ($auction->seller->id == $request->user()->id) {
+            $errors = new \Illuminate\Support\MessageBag(['You cannot bid on your own auction']);
             return view('auction.auction-view', ['auction' => $auction, 'errors' => $errors]);
         }
         $currentHighestBidInPence = $auction->getHighestBid();

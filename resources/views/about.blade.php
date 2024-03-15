@@ -95,7 +95,7 @@
             </a>
             </div>
 
-            <p class="text-lg col-span-2 pr-8">Join HighBid today and experience the excitement of online auctions like never before.
+            <p class="text-lg col-span-2 max-w-3xl mx-auto">Join HighBid today and experience the excitement of online auctions like never before.
                 Whether you're a
                 seasoned collector, a savvy shopper, or an aspiring entrepreneur, HighBid offers something for everyone.
                 Sign up for free and start exploring our diverse marketplace of incredible deals and unique finds. Happy

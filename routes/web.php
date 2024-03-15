@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuctionController;
 use App\Http\Controllers\AuctionImageController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FAQController;
 use App\Http\Controllers\HomeController;
 use App\Http\Middleware\UpdateUserActivity;
 
@@ -19,6 +20,15 @@ use App\Http\Middleware\UpdateUserActivity;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::post('/auction/search', [AuctionController::class, 'search'])->name('auction.search');
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/auctions', [AuctionController::class, 'view_all'])->name('auctions');
+Route::get('/about', [AboutController::class, 'index'])->name('about');
+Route::get('/faq', [FAQController::class, 'index'])->name('faq');
+Route::get('/auction/{auction}/watchers', [AuctionController::class, 'getUsersWatching'])->name('auction.watchers');
+Route::get('/auction/{auction}/latest_bid', [AuctionController::class, 'latestBid'])->name('auction.latestBid');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'view'])->name('dashboard');
@@ -36,14 +46,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/auction/{auction}', [AuctionController::class, 'view'])->name('auction.view')->middleware(UpdateUserActivity::class);
 
-Route::post('/auction/search', [AuctionController::class, 'search'])->name('auction.search');
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/auctions', [AuctionController::class, 'view_all'])->name('auctions');
-Route::get('/about', [AboutController::class, 'index'])->name('about');
-Route::get('/faq', [AuctionController::class, 'view_all'])->name('faq');
-Route::get('/auction/{auction}/watchers', [AuctionController::class, 'getUsersWatching'])->name('auction.watchers');
-Route::get('/auction/{auction}/latest_bid', [AuctionController::class, 'latestBid'])->name('auction.latestBid');
 
 
 require __DIR__.'/auth.php';

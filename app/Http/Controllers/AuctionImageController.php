@@ -14,43 +14,40 @@ class AuctionImageController extends Controller
      */
     public function store(Request $request)
     {
-        if (!$request->hasFile('file') || empty($request->imageMatchingKey)) {
-            return response()->json(['error' => 'Upload failed. Please try again later.']);
-        }
-
-        $unusedUserImages = AuctionImage::where('user_id', $request->user()->id)
-            ->whereNull('auction_id')
-            ->get();
-        
-        
-        if ($unusedUserImages->count() > config('imageConfig.max_usused_user_images', 10)) {
-            $unusedUserImages->each->delete();
-        }
-
         try {
+            if (!$request->hasFile('file') || empty($request->imageMatchingKey)) {
+                return response()->json(['error' => 'Upload failed. Please try again later.']);
+            }
+    
+            Log::info('imageMatchingKey: ' . $request->imageMatchingKey);
+    
             foreach ($request->file('file') as $file) {
-                Log::info('foreach image: ' . $file->getRealPath());
+                Log::info('foreach image: ' . $file->getClientOriginalName());
                 $image = Image::make($file->getRealPath())->resize(null, 1000, function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
                 });
-                Log::info('foreach image tostring: ' . $image->__toString());
-
+                Log::info('foreach image resized');
+    
                 $imageHash = md5_file($file->getRealPath());
                 $imagePath = 'uploads/' . $imageHash . '.' . $file->getClientOriginalExtension();
                 Log::info('foreach image path: ' . $imagePath);
-
+    
                 $image->save(storage_path('app/public/' . $imagePath));
-
+    
                 AuctionImage::create([
                     'path' => $imagePath,
                     'image_matching_key' => $request->imageMatchingKey,
                     'user_id' => $request->user()->id
                 ]);
+    
+                Log::info('Image saved to database.');
             }
+    
             return response()->json(['success' => 'uploaded successfully']);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Upload failed. Please try again later. ' . $e->getMessage()]);
+            Log::error('Upload failed. Error: ' . $e->getMessage());
+            return response()->json(['error' => 'Upload failed. Please try again later.']);
         }
     }
 }

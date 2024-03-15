@@ -150,61 +150,51 @@
                     </p>
                     <div class="mb-4">
                         <h2 class="font-semibold mb-1">
-                            Targets
+                            Features
                         </h2>
                         <p class="text-gray-400">
-                            Dryness, Signs of Aging
+                            {{$auction->features}}
                         </p>
                     </div>
-                    <div class="mb-4">
-                        <h2 class="font-semibold mb-1">
-                            Suited to
-                        </h2>
-                        <p class="text-gray-400">
-                            All Skin Types
-                        </p>
-                    </div>
-                    <div class="mb-4">
-                        <h2 class="font-semibold mb-1">
-                            Format
-                        </h2>
-                        <p class="text-gray-400">
-                            Water-based Serum
-                        </p>
-                    </div>
-                    <div class="mb-4">
-                        <h2 class="font-semibold mb-1">
-                            Key ingredients
-                        </h2>
-                        <p class="text-gray-400">
-                            Hyaluronic acid, ceramides, pro-vitamin B5
-                        </p>
-                    </div>
+
                     <div class="flex items-center mb-4">
                         <span class="text-2xl font-semibold">
                             <div hx-get={{ route('auction.latestBid', $auction) }} hx-swap="innerHTML"
                                 hx-trigger="load, every 15s">
                             </div>
                         </span>
+                        
                     </div>
-                    <span>{{ $auction->end_time }}</span>
+
+                    <div class="h-8">
+                        <ul>
+                            <li>This auction is currently:<div class="inline-block ml-2 text-green-400 animate-bounce">{{ $auction->status }}<div><li>
+                        </ul>
+                    </div>
+
+                    @if ($errors->any())
+                    <div class="text-red-400 animate-pulse">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
                     <div class="flex items-center mb-4">
                         <form hx-post="{{ route('auction.bid', $auction) }}" hx-target="body" hx-swap="outerHTML"
                             hx-boost="false">
                             @csrf
-                            <input class="text-black" type="text" name="bid" placeholder="£" autocomplete="false"
-                                required pattern="^\d+(\.\d{1,2})?$" @if ($auction->end_time < now()) disabled @endif>
-                            <button class="ml-4 px-6 py-3 border bg-blue-accent border-black text-sm">
+                            <input class="text-black disabled:opacity-80" type="text" name="bid" placeholder="£" autocomplete="false"
+                                required pattern="^\d+(\.\d{1,2})?$" @if ($auction->end_time < now() || auth()->id() == $auction->seller->id) disabled @endif>
+                            <button class="ml-4 px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60"
+                            @if (auth()->id() == $auction->seller->id) disabled @endif>
                                 PLACE BID
                             </button>
                         </form>
-
                     </div>
                     <p class="text-gray-600 text-sm mb-4">
-                        Free shipping on orders over 25 GBP
-                        <a class="text-blue-600" href="#">
-                            FAQs
-                        </a>
+                        <span>Ends on {{ $auction->end_time->isoFormat('MMMM Do YYYY, h:mm:ss a') }}</span>
                         .
                     </p>
                     <p class="text-gray-600 text-sm">

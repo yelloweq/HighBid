@@ -33,6 +33,7 @@ class MatchUploadedImagesToAuction implements ShouldQueue
      */
     public function handle(): void
     {
+        Log::info('Matching images to auction');
         AuctionImage::where('image_matching_key', $this->imageMatchingKey)
             ->update(['auction_id' => $this->auction->id]);
     }

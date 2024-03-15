@@ -65,6 +65,10 @@ class ProcessImageWithRekognition implements ShouldQueue
 
                     Image::make(storage_path('app/public/' . $image->path))->blur(80)->save();
                 }
+                Log::info('Image processed with Rekognition:', [
+                    'image' => $image->id,
+                    'labels' => $rekognitionLabels
+                ]);
             } catch (AwsException $e) {
                 Log::error('Error processing image with Rekognition:', [
                     'image' => $image->id,
