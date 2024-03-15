@@ -5,19 +5,17 @@ namespace App\Http\Controllers;
 use Akaunting\Money\Money;
 use App\Jobs\MatchUploadedImagesToAuction;
 use App\Jobs\ProcessImageWithRekognition;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use App\Models\Auction;
 use App\Http\Requests\CreateAuctionRequest;
 use App\Enums\DeliveryType;
 use App\Enums\AuctionType;
-use App\Jobs\ProcessAuctionImageData;
-use App\Jobs\ProcessCreatedAuction;
 use App\Models\Category;
+use App\Models\Watcher;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -25,7 +23,6 @@ use Ramsey\Uuid\Uuid;
 
 class AuctionController extends Controller
 {
-
     /**
      * View a single auction page.
      */
@@ -43,9 +40,8 @@ class AuctionController extends Controller
         $categories = Category::getCategories();
         $deliveryTypes = DeliveryType::cases();
 
-        $auctions = Auction::where('status', 'Active')
-            ->paginate($request->input('per_page', 25))
-            ->appends($request->all());
+        $auctions = $this->searchAuctionsFromRequest($request);
+
         return view('auction.auction-view-all', [
             'auctions' => $auctions,
             'categories' => $categories,
@@ -58,19 +54,9 @@ class AuctionController extends Controller
      */
     public function search(Request $request): Response
     {
-        $auctions = Auction::query()
-            ->when($request->search, fn ($q, $search) =>
-            $q->where('title', 'like', "%$search%"))
-            ->when($request->category, fn ($q, $category) =>
-            $q->whereCategoryId($category))
-            ->when($request->status, fn ($q, $status) =>
-            $q->where('status', $status))
-            ->when($request->delivery, fn ($q, $deliveryType) =>
-            $q->where('delivery_type', $deliveryType))
-            ->paginate($request->input('per_page', 25))
-            ->appends($request->all());
+        $auctions = $this->searchAuctionsFromRequest($request);
 
-        $newPath = route('auctions') . '?' . http_build_query($request->all());
+        $newPath = route('auctions') . '?' . http_build_query($request->except('_token'));
 
         return response()->view('components.auction-grid', ['auctions' => $auctions])
             ->header('HX-Push-Url', $newPath);
@@ -118,7 +104,7 @@ class AuctionController extends Controller
                 new ProcessImageWithRekognition($auction)
             ])->dispatch($auction, $request->auctionCreateKey);
         }
-        
+
 
         //dispatch job to process the auction
         // ProcessCreatedAuction::dispatch($auction);
@@ -133,7 +119,8 @@ class AuctionController extends Controller
     public function bid(Request $request, Auction $auction): View
     {
         if ($auction->status !== 'Active' || $auction->end_time < Carbon::now()) {
-            return view('auction.auction-view', ['auction' => $auction, 'errors' => ['Auction is not active']]);
+            $errors = new \Illuminate\Support\MessageBag(['Auction has ended']);
+            return view('auction.auction-view', ['auction' => $auction, 'errors' => $errors]);
         }
         $currentHighestBidInPence = $auction->getHighestBid();
 
@@ -156,9 +143,57 @@ class AuctionController extends Controller
 
         $auction->bids()->create([
             'amount' => $request->input('bid') * 100,
-            'user_id' => $request->user()->id ?? Auth::id(),
+            'user_id' => $request->user()->id,
         ]);
 
-        return view('auction.auction-view', ['auction' => $auction]);
+        return view('auction.auction-view', ['auction' => $auction, 'errors' => new \Illuminate\Support\MessageBag()]);
+    }
+
+    public function latestBid(Auction $auction): View
+    {
+        $latestBid = $auction->bids()->latest()->first();
+
+        if ($latestBid != null) {
+            return view('components.auction-view-latest-bid', ['value' => $latestBid->amount]);
+        }
+
+        return view('components.auction-view-latest-bid', ['value' => $auction->price]);
+    }
+
+    public function getUsersWatching(Auction $auction): View
+    {
+        $watchersCount = Watcher::where('auction_id', $auction->id)->where('last_activity_time', '>', Carbon::now()->subDay())->count();
+        return view('components.auction-view-watchers', ['watchersCount' => $watchersCount]);
+    }
+
+    protected function searchAuctionsFromRequest(Request $request): LengthAwarePaginator
+    {
+        $auctionsQuery = Auction::query()
+            ->where('status', 'Active')
+
+            ->when($request->search && !empty($request->search), function ($q, $search) {
+                return $q->where('title', 'like', "%$search%");
+            })
+            ->when($request->category && $request->category !== "all", function ($q) use ($request) {
+                return $q->whereHas('category', function ($query) use ($request) {
+                    $query->where('id', $request->category);
+                });
+            })
+            ->when($request->status, function ($q, $status) {
+                return $q->where('status', $status);
+            })
+            ->when($request->delivery, function ($q, $deliveryType) {
+                return $q->where('delivery_type', $deliveryType);
+            });
+
+        if ($request->category === "all") {
+            $auctions = $auctionsQuery->paginate($request->input('per_page', 25), ['*'], 'page', $request->query('page', 1))
+                ->appends($request->all());
+        } else {
+            $auctions = $auctionsQuery->paginate($request->input('per_page', 25), ['*'], 'page', $request->query('page', 1))
+                ->appends($request->except('category')); // Exclude the category parameter from pagination links
+        }
+
+        return $auctions;
     }
 }

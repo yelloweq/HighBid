@@ -6,8 +6,8 @@
     }
 @endphp
 
-<form method="POST" action="{{ route('auction.create') }}" hx-post="{{ route('auction.create') }}" hx-swap="outerHTML"
-    hx-target="[hx-main-page]" id="createAuctionForm">
+<form method="POST" action="{{ route('auction.store') }}" hx-post="{{ route('auction.store') }}" hx-swap="outerHTML"
+    hx-target="body" id="createAuctionForm">
     @csrf
 </form>
 
@@ -89,7 +89,7 @@
     </div>
 
     <x-flatpickr :min-date="today()" :max-date="today()->addMonths(2)" show-time id="end-time" name="end-time"
-        class="mt-1 block font-normal text-md text-gray-300 bg-gray-900 rounded w-full" required autocomplete="End time"
+        class="mt-1 block font-normal text-md text-gray-300 bg-gray-800 rounded w-full" required autocomplete="End time"
         form="createAuctionForm" />
     <x-input-error class="mt-2" :messages="$errors->get('end-time')" />
 </div>
@@ -129,6 +129,7 @@
             uploadMultiple: true,
             acceptedFiles: ".jpeg,.jpg,.png,.webp",
             addRemoveLinks: true,
+            previewContrainer: $('#image-previews');
             dictDefaultMessage: "Drop your files here or click to upload",
             dictFallbackMessage: "Your browser doesn't support drag and drop file uploads.",
             dictFileTooBig: "File is too big. Max filesize: " + maxFilesizeVal + "MB.",
@@ -150,6 +151,16 @@
         };
     </script>
     @include('flatpickr::components.script')
+    <script
+    type="module"
+    src="https://unpkg.com/@material-tailwind/html@latest/scripts/tooltip.js"
+    ></script>
+    <script
+    type="module"
+    src="https://unpkg.com/@material-tailwind/html@latest/scripts/popover.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://unpkg.com/@material-tailwind/html@latest/scripts/collapse.js"></script>
 @endpush
 
 

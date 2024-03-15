@@ -70,6 +70,16 @@ class Auction extends Model
         return $this->hasMany(AuctionImage::class);
     }
 
+    public function watchers(): HasMany
+    {
+        return $this->hasMany(Watcher::class);
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
     public function timeRemaining(): string
     {
         if ($this->end_time->greaterThan(Carbon::now())) {

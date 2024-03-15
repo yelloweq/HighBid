@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --bg-primary: #100F23;
+    --bg-secondary: #0D255B;
+    --blue-accent: #3417FF;
+}
+
+.fullpage {
+    height: 90%;
+}
+
+.dropzone {
+    background-color: rgb(17 24 39 / 1);
+    border: 2px dashed var(--blue-accent);
+    border-radius: 0.5rem;
+    color: white;
+}
+
+.dropzone:hover {
+    background-color: rgb(23, 31, 50);;
+}
+
+.dz-preview.dz-image-preview {
+    background-color: var(--bg-primary) !important;
+}

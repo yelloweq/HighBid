@@ -4,13 +4,15 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -47,7 +49,7 @@ class User extends Authenticatable
     /**
      * Get the auctions for the user.
      */
-    public function auctions()
+    public function auctions(): HasMany
     {
         return $this->hasMany(Auction::class, 'seller_id');
     }
@@ -55,8 +57,13 @@ class User extends Authenticatable
     /**
      * Get the bids for the user.
      */
-    public function bids()
+    public function bids(): HasMany
     {
         return $this->hasMany(Bid::class, 'bidder_id');
+    }
+
+    public function watchers(): HasMany
+    {
+        return $this->hasMany(Watcher::class);
     }
 }

@@ -1,32 +1,45 @@
 import withMT from "@material-tailwind/html/utils/withMT";
-import forms from '@tailwindcss/forms';
-import defaultTheme from 'tailwindcss/defaultTheme';
+import forms from "@tailwindcss/forms";
 
 /** @type {import('tailwindcss').Config} */
 export default withMT({
     content: [
-        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
-        './storage/framework/views/*.php',
-        './resources/views/**/*.blade.php',
+        "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
+        "./storage/framework/views/*.php",
+        "./resources/views/**/*.blade.php",
         "./resources/**/*.blade.php",
         "./resources/**/*.js",
         "./resources/**/*.vue",
+        "./node_modules/flowbite/**/*.js"
     ],
 
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                inter: ["Inter", "sans-serif"],
             },
             colors: {
-                'bg-primary': '#231F20',
-                'gbg-primary': '#0F0F0F',
-                'primary-new': '#EFE6DD',
-                'blue-accent': '#7EBDC2',
-                'vanilla-accent': '#F3DFA2',
-                'red-accent': '#BB4430',
+                "blue-primary": "#100F23",
+                "blue-accent": "#3417FF",
+                "blue-secondary": "#0D255B",
+                "blue-thirtiary": "#123177",
+            },
+            spacing: {
+                '8xl': '88rem',
+                '9xl': '96rem',
+                '10xl': '104rem',
+                '11xl': '112rem',
+            },
+            height: {
+                '600': '37.5rem',
+            },
+            width: {
+                '600': '37.5rem',
             }
         },
     },
-    plugins: [forms],
+    plugins: [
+        forms,
+        require('flowbite/plugin'),
+    ],
 });

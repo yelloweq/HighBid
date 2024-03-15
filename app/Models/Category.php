@@ -37,4 +37,8 @@ class Category extends Model
     public function parentCategory(){
         return $this->belongsTo(Category::class, 'parent_id');
     }
+
+    public function auctions(){
+        return $this->hasMany(Auction::class);
+    }
 }

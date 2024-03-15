@@ -17,12 +17,17 @@
         crossorigin="anonymous"
         referrerpolicy="no-referrer"
         />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         @include('flatpickr::components.style')
     </head>
-    <body class="font-sans antialiase bg-bg-primary" hx-boost="true">
+    <body class="font-inter antialiase bg-blue-primary" hx-boost="true">
         <div class="min-h-screen" >
             @include('layouts.navigation')
 
@@ -40,17 +45,6 @@
                 {{ $slot }}
             </main>
         </div>
-
-        <script
-        type="module"
-        src="https://unpkg.com/@material-tailwind/html@latest/scripts/tooltip.js"
-        ></script>
-        <script
-        type="module"
-        src="https://unpkg.com/@material-tailwind/html@latest/scripts/popover.js"
-        ></script>
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <script src="https://unpkg.com/@material-tailwind/html@latest/scripts/collapse.js"></script>
         @stack('scripts')
     </body>
 </html>

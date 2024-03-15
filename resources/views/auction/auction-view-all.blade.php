@@ -1,7 +1,7 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8" hx-view-all-content>
-        <div class="flex ">
-            <div class="w-3/12 mr-4">
+    <div class="py-6 px-4 sm:px-6 max-w-11xl mx-auto" hx-view-all-content>
+        <div class="flex gap-2 sm:flex-col md:flex-row">
+            <div class="w-3/12">
                 <x-sidebar :categories="$categories" :deliveryTypes="$deliveryTypes"/>
             </div>
             <div class="w-full">
