@@ -111,3 +111,10 @@
 </x-app-layout>
 @include('Chatify::layouts.modals')
 @include('Chatify::layouts.footerLinks')
+@push('scripts')
+<script>
+document.addEventListener('htmx:load', function(event) {
+    location.reload(); // Reload the page when content is loaded through htmx
+});
+</script>
+@endpush

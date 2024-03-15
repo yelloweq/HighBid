@@ -93,14 +93,22 @@
                                 <div class="zoom-container mr-4 my-2 bg-gray-900">
                                     <img alt="Product image" class="object-contain w-96 h-96 mx-auto"
                                         src="{{ asset('storage/' . $auction->images->get($index)->path) }}" />
+
                                 </div>
+                                @if ($auction->images->get($index)->flagged)
+                                <p class="text-white absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 bg-red-500 p-4">Image contains sensitive material</p>
+                                @endif
+                                
                             @endfor
                         @else
                             @for ($index = 0; $index < 3; $index++)
                                 <div class="zoom-container mr-4 my-2">
-                                    <img alt="Product image" class="w-full"
+                                    <img alt="Product image" class="object-contain w-96 h-96 mx-auto"
                                         src="{{ asset('storage/' . $auction->images->get($index)->path) }}" />
                                 </div>
+                                @if ($auction->images->get($index)->flagged)
+                                <p class="text-white absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 bg-red-500 p-4">Image contains sensitive material</p>
+                                @endif
                             @endfor
                             <div class="relative mr-4 my-2">
                                 <img alt="Product image"
@@ -108,6 +116,9 @@
                                 @if ($auction->images()->count() > 4)
                                     <span
                                         class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-800 px-6 py-4 bg-opacity-80">{{ $auction->images()->count() - 4 }}+</span>
+                                @endif
+                                @if ($auction->images->get($index)->flagged)
+                                    <p class="text-white absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 bg-red-500 p-4">Image contains sensitive material</p>
                                 @endif
                             </div>
                         @endif
@@ -166,7 +177,7 @@
                         
                     </div>
 
-                    <div class="h-8">
+                    <div class="mb-4">
                         <ul>
                             <li>This auction is currently:<div class="inline-block ml-2 text-green-400 animate-bounce">{{ $auction->status }}<div><li>
                         </ul>
@@ -181,6 +192,18 @@
                         </ul>
                     </div>
                     @endif
+                    @if ($auction->winner_id == auth()->id())
+                    <div class="flex items-center mb-4">
+                        <form action="{{ route('payment.checkout', $auction)}}" method="POST"
+                            hx-boost="false">
+                            @csrf
+                            <button class="ml-4 px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60"
+                            >
+                                PROCEED TO PAYMENT
+                            </button>
+                        </form>
+                    </div>
+                    @else
                     <div class="flex items-center mb-4">
                         <form hx-post="{{ route('auction.bid', $auction) }}" hx-target="body" hx-swap="outerHTML"
                             hx-boost="false">
@@ -193,9 +216,14 @@
                             </button>
                         </form>
                     </div>
+                    @endif
+
+                    @if ($auction->seller->id != auth()->id())
+                    <p class="text-blue-400 hover:underline cursor-pointer">
+                        <a href="/messages/{{ $auction->seller->id }}" hx-boost="false"> Message seller for more information </a></p>
+                    @endif
                     <p class="text-gray-600 text-sm mb-4">
-                        <span>Ends on {{ $auction->end_time->isoFormat('MMMM Do YYYY, h:mm:ss a') }}</span>
-                        .
+                        <span>Ends on {{ $auction->end_time->isoFormat('MMMM Do YYYY, h:mm:ss a') }}.</span>
                     </p>
                     <p class="text-gray-600 text-sm">
                         365 day returns.
@@ -205,7 +233,7 @@
                         .
                     </p>
                     <div
-                        class="grid lg:grid-rows-2 lg:grid-cols-5 sm:grid-rows-3 sm:grid-cols-3 items-center mt-4 bg-blue-secondary justify-center rounded-md flex-wrap p-6 text-center">
+                        class=" hidden grid lg:grid-rows-2 lg:grid-cols-5 sm:grid-rows-3 sm:grid-cols-3 items-center mt-4 bg-blue-secondary justify-center rounded-md flex-wrap p-6 text-center">
                         <div class="text-gray-400 flex flex-col items-center mb-4">
                             <dt class="mb-2 min-w-24">water-resistant</dt>
                             <dd><i class="fa-regular fa-circle-check fa-lg"></i></dd>

@@ -8,6 +8,7 @@ use App\Http\Controllers\AuctionImageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FAQController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\StripeController;
 use App\Http\Middleware\UpdateUserActivity;
 
 /*
@@ -32,6 +33,7 @@ Route::get('/auction/{auction}/latest_bid', [AuctionController::class, 'latestBi
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'view'])->name('dashboard');
+    Route::post('dashboard/search', [DashboardController::class, 'search'])->name('dashboard.search');
     
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -42,6 +44,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/auction/{auction}', [AuctionController::class, 'bid'])->name('auction.bid');
 
     Route::post('/upload/images', [AuctionImageController::class, 'store'])->name('auction.images.store');
+
+    Route::get('/payment/success', [StripeController::class, 'success'])->name('payment.success');
+    Route::post('/payment/{auction}', [StripeController::class, 'checkout'])->name('payment.checkout');
+    Route::get('/payment/{auction}', [StripeController::class, 'index'])->name('payment.index');
 });
 
 Route::get('/auction/{auction}', [AuctionController::class, 'view'])->name('auction.view')->middleware(UpdateUserActivity::class);

@@ -8,5 +8,6 @@ enum AuctionStatus: string
     case ACTIVE = 'Active';
     case PROCCESSING = 'Processing';
     case CLOSED = 'Closed';
+    case Inactive = 'Inactive';
 
 }

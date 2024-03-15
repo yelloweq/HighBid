@@ -63,7 +63,7 @@ class ProcessImageWithRekognition implements ShouldQueue
                     $recognitionLabelString = implode(",", array_column($rekognitionLabels, 'Name'));
                     $image->update(['flagged' => true, 'rekognition_labels' => $recognitionLabelString]);
 
-                    Image::make(storage_path('app/public/' . $image->path))->blur(80)->save();
+                    Image::make(storage_path('app/public/' . $image->path))->blur(95)->save();
                 }
                 Log::info('Image processed with Rekognition:', [
                     'image' => $image->id,
