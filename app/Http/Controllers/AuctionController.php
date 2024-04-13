@@ -191,8 +191,19 @@ class AuctionController extends Controller
         return $auctions;
     }
 
-    // public function getHottestAuctions(Request $request): View
-    // {
-
-    // }
+    public function getLimitedAuctions(): View
+    {
+        $auctions = Auction::where('status', 'Active')
+            ->where('end_time', '<', Carbon::now()->addDay())
+            ->withCount(['bids' => function($query) {
+                // Count only bids within the last 24 hours
+                $query->where('created_at', '>=', Carbon::now()->subDay());
+            }])
+            ->having('bids_count', '>', 0)
+            ->orderByDesc('bids_count')
+            ->limit(3)
+            ->get();
+        
+        return view('components.limited-auctions-grid', ['auctions' => $auctions]);
+    }
 }

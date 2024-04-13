@@ -30,6 +30,7 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/faq', [FAQController::class, 'index'])->name('faq');
 Route::get('/auction/{auction}/watchers', [AuctionController::class, 'getUsersWatching'])->name('auction.watchers');
 Route::get('/auction/{auction}/latest_bid', [AuctionController::class, 'latestBid'])->name('auction.latestBid');
+Route::get('/auction/limited', [AuctionController::class, 'getLimitedAuctions'])->name('auctions.limited');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'view'])->name('dashboard');
@@ -51,7 +52,6 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/auction/{auction}', [AuctionController::class, 'view'])->name('auction.view')->middleware(UpdateUserActivity::class);
-
 
 
 

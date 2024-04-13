@@ -71,92 +71,49 @@
 </section>
 <section class="mb-12 max-w-11xl mx-auto">
     <div class="flex justify-between items-center mb-4">
-        <h3 class="text-2xl font-bold text-yellow-400 limited-auction" data-end-time="16/03/2024 00:00:00">
+        <h3 class="text-2xl font-bold text-yellow-400 limited-auction">
             Limited Auctions
             <span class="text-yellow-400 countdown-timer">
                 {{-- countdown here --}}
             </span>
         </h3>
     </div>
-    <div class="grid grid-cols-3 gap-4">
-        <!-- First NFT -->
-        <div class="bg-gray-800 p-4 rounded-lg">
-            <img alt="3D Splash Circle Lines NFT artwork" class="rounded-md mb-4" height="300"
-                src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-9jdrtrRdidHiQgfFqdpVh9ls/user-G6G09W48dqtVrpPI2JNm5ixu/img-p4x0nzGY8CGxtGc1Ev8HTh59.png?st=2024-03-06T22%3A41%3A47Z&amp;se=2024-03-07T00%3A41%3A47Z&amp;sp=r&amp;sv=2021-08-06&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2024-03-06T17%3A10%3A37Z&amp;ske=2024-03-07T17%3A10%3A37Z&amp;sks=b&amp;skv=2021-08-06&amp;sig=AR5fjaYZ/8LJcEmvg1BM5Soqa8fJYZwLiEgNGN3Kg5k%3D"
-                width="300" />
-            <h4 class="text-lg font-semibold mb-2">
-                3D Splash Circle Lines
-            </h4>
-            <p class="text-gray-400 text-sm mb-4">
-                #1 - StarkLee @starklee
-            </p>
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-blue-500">
-                    07:20:30
-                </span>
-                <span class="text-gray-400">
-                    Current bid
-                </span>
-                <span class="text-white">
-                    6.71 ETH
-                </span>
-            </div>
-            <button class="w-full bg-blue-600 py-2 rounded-md text-white font-semibold hover:bg-blue-700">
-                Place a Bid
-            </button>
-        </div>
-        <!-- Second NFT -->
-        <div class="bg-gray-800 p-4 rounded-lg">
-            <img alt="Cylinder shaped podiums NFT artwork" class="rounded-md mb-4" height="300"
-                src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-9jdrtrRdidHiQgfFqdpVh9ls/user-G6G09W48dqtVrpPI2JNm5ixu/img-PmF8gdhSQbqSxxAzihowQC57.png?st=2024-03-06T22%3A41%3A47Z&amp;se=2024-03-07T00%3A41%3A47Z&amp;sp=r&amp;sv=2021-08-06&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2024-03-06T21%3A42%3A22Z&amp;ske=2024-03-07T21%3A42%3A22Z&amp;sks=b&amp;skv=2021-08-06&amp;sig=iajccLDJ32X%2BjkPOuR8taXWdNTVngOaBJbgeXRpD96A%3D"
-                width="300" />
-            <h4 class="text-lg font-semibold mb-2">
-                Cylinder shaped podiums
-            </h4>
-            <p class="text-gray-400 text-sm mb-4">
-                #2 - SupremeSorcerer @supremesorcerer
-            </p>
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-blue-500">
-                    07:00:20
-                </span>
-                <span class="text-gray-400">
-                    Current bid
-                </span>
-                <span class="text-white">
-                    6.38 ETH
-                </span>
-            </div>
-            <button class="w-full bg-blue-600 py-2 rounded-md text-white font-semibold hover:bg-blue-700">
-                Place a Bid
-            </button>
-        </div>
-        <!-- Third NFT -->
-        <div class="bg-gray-800 p-4 rounded-lg">
-            <img alt="Haunted by Mask NFT artwork" class="rounded-md mb-4" height="300"
-                src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-9jdrtrRdidHiQgfFqdpVh9ls/user-G6G09W48dqtVrpPI2JNm5ixu/img-uP8fwKTuYxKa7IOY8iitRhkQ.png?st=2024-03-06T22%3A41%3A48Z&amp;se=2024-03-07T00%3A41%3A48Z&amp;sp=r&amp;sv=2021-08-06&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2024-03-06T14%3A46%3A47Z&amp;ske=2024-03-07T14%3A46%3A47Z&amp;sks=b&amp;skv=2021-08-06&amp;sig=MO6Ys/cZYYRxiYkh8AQszELydjWzN9wfVj7VgLqurEU%3D"
-                width="300" />
-            <h4 class="text-lg font-semibold mb-2">
-                Haunted by Mask
-            </h4>
-            <p class="text-gray-400 text-sm mb-4">
-                #3 - PointBreak @pointbreak
-            </p>
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-blue-500">
-                    07:10:20
-                </span>
-                <span class="text-gray-400">
-                    Current bid
-                </span>
-                <span class="text-white">
-                    6.21 ETH
-                </span>
-            </div>
-            <button class="w-full bg-blue-600 py-2 rounded-md text-white font-semibold hover:bg-blue-700">
-                Place a Bid
-            </button>
-        </div>
-    </div>
+    <div hx-get={{ route('auctions.limited' )}} hx-target="this" hx-swap="outerHTML" hx-trigger="load"></div>
 </section>
 </x-app-layout>
+
+
+<script>
+    document.addEventListener('htmx:load', function() {
+        function updateCountdown() {
+            const countdowns = document.querySelectorAll('.countdown');
+            countdowns.forEach(countdown => {
+                const endTime = new Date(countdown.dataset.endTime).getTime();
+                const now = new Date().getTime();
+                const distance = endTime - now;
+
+                if (distance < 0) {
+                    countdown.textContent = "Auction ended";
+                } else {
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    countdown.textContent = `${hours}h ${minutes}m ${seconds}s`;
+                }
+            });
+        }
+
+        document.querySelectorAll('.countdown').forEach(countdown => {
+            const intervalId = setInterval(updateCountdown, 1000);
+            countdown.dataset.intervalId = intervalId; // Store interval ID in dataset for potential clearance
+        });
+    });
+
+    document.body.addEventListener('htmx:afterSwap', function(event) {
+        if (event.detail.target.classList.contains('countdown-timer')) {
+            // Assuming 'updateCountdown' function is globally available
+            updateCountdown();
+        }
+    });
+</script>
+
