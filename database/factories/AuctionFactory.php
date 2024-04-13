@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\AuctionStatus;
 use App\Enums\AuctionType;
 use App\Enums\DeliveryType;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -27,6 +28,7 @@ class AuctionFactory extends Factory
             'type' => fake()->randomElement(AuctionType::cases()),
             'price' => fake()->randomNumber(5, false),
             'delivery_type' => fake()->randomElement(DeliveryType::cases()),
+            'category_id' => Category::all()->random()->id,
             'winner_id' => null,
             'seller_id' => User::all()->random()->id,
             'start_time' => fake()->dateTimeBetween('-1 month', 'now'),

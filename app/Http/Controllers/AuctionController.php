@@ -61,6 +61,7 @@ class AuctionController extends Controller
 
         return response()->view('components.auction-grid', ['auctions' => $auctions])
             ->header('HX-Push-Url', $newPath);
+
     }
 
 
@@ -183,15 +184,15 @@ class AuctionController extends Controller
             ->when($request->delivery, function ($q, $deliveryType) {
                 return $q->where('delivery_type', $deliveryType);
             });
-
-        if ($request->category === "all") {
-            $auctions = $auctionsQuery->paginate($request->input('per_page', 25), ['*'], 'page', $request->query('page', 1))
-                ->appends($request->all());
-        } else {
-            $auctions = $auctionsQuery->paginate($request->input('per_page', 25), ['*'], 'page', $request->query('page', 1))
-                ->appends($request->except('category')); // Exclude the category parameter from pagination links
-        }
+            
+            $auctions = $auctionsQuery->paginate($request->input('per_page', 25), ['*'], 'page', $request->query('page', 1)
+            )->appends($request->all());
 
         return $auctions;
     }
+
+    // public function getHottestAuctions(Request $request): View
+    // {
+
+    // }
 }

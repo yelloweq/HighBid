@@ -52,7 +52,7 @@ class DashboardController extends Controller
                 return $q->where('winner_id', $request->user()->id);
             })
             ->when($request->sort && $request->sort == "bids", function ($q) use ($request) {
-                return $q->whereHas('bid', function ($query) use ($request) {
+                return $q->whereHas('bids', function ($query) use ($request) {
                     $query->where('user_id', $request->user()->id);
                 });
             })->orderBy('created_at', 'desc');

@@ -19,7 +19,6 @@ class Bid extends Model
         'auction_id',
         'user_id',
         'amount',
-        'placed_at'
     ];
 
     /**

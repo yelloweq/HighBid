@@ -177,12 +177,13 @@
                         
                     </div>
 
+                    @if ($auction->seller->id == auth()->id())
                     <div class="mb-4">
                         <ul>
                             <li>This auction is currently:<div class="inline-block ml-2 text-green-400 animate-bounce">{{ $auction->status }}<div><li>
                         </ul>
                     </div>
-
+                    @endif
                     @if ($errors->any())
                     <div class="text-red-400 animate-pulse">
                         <ul>

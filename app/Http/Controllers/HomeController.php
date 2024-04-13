@@ -18,6 +18,8 @@ class HomeController extends Controller
         $totalBids = Bid::count();
         $totalUsers = User::count();
 
+        
+
         return view('home', compact('totalAuctions', 'totalBids', 'totalUsers'));
     }
 }

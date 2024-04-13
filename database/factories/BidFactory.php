@@ -21,8 +21,7 @@ class BidFactory extends Factory
         return [
             'auction_id' => Auction::all()->random()->id,
             'user_id' => User::all()->random()->id,
-            'amount' => fake()->randomNumber(5, false),
-            'placed_at' => fake()->dateTimeBetween('-1 month', 'now'),
+            'amount' => fake()->randomNumber(5, false)
         ];
     }
 }

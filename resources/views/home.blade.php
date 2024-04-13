@@ -17,17 +17,18 @@
 
 <x-app-layout>
 <section class="text-center mb-12 text-white max-w-11xl mx-auto">
-    <h2 class="text-4xl font-bold mb-4">
-        Explore the 10.000 best NFT collections right here
+    <h2 class="text-4xl md:text-5xl lg:text-6xl text-transparent font-inter font-semibold text-white p-4">
+        Explore <span class="text-transparent bg-gradient-to-r from-blue-accent via-blue-400 to-indigo-700 bg-clip-text"> authentic </span> auctions with just one click
     </h2>
     <p class="text-gray-400 mb-6">
-        Buy your digital assets NFT's in here and get some promo for new account
+        Our automated system makes it easy to find the best deals on the items you love.
     </p>
     <div class="flex justify-center space-x-4">
-        <button class="bg-blue-600 px-6 py-3 rounded-md text-white font-semibold hover:bg-blue-700">
+        <button class="bg-blue-600 px-6 py-3 rounded-md text-white font-semibold hover:bg-blue-700" hx-get="{{ route('auctions')}}" hx-target="body" hx-trigger="click" hx-push-url="true">
             Explore
         </button>
         <button
+        hx-get="{{ route('auction.create')}}" hx-target="body" hx-trigger="click" hx-push-url="true"
             class="bg-transparent px-6 py-3 rounded-md text-white font-semibold border border-blue-600 hover:border-blue-700 hover:text-blue-500">
             Create
         </button>
@@ -70,15 +71,12 @@
 </section>
 <section class="mb-12 max-w-11xl mx-auto">
     <div class="flex justify-between items-center mb-4">
-        <h3 class="text-2xl font-bold">
-            Limited Auction
-            <span class="text-yellow-400">
-                07:20:30
+        <h3 class="text-2xl font-bold text-yellow-400 limited-auction" data-end-time="16/03/2024 00:00:00">
+            Limited Auctions
+            <span class="text-yellow-400 countdown-timer">
+                {{-- countdown here --}}
             </span>
         </h3>
-        <button class="text-blue-500 hover:text-blue-600">
-            More Item
-        </button>
     </div>
     <div class="grid grid-cols-3 gap-4">
         <!-- First NFT -->

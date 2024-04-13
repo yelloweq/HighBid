@@ -1,8 +1,8 @@
 
 <div
-    class="relative flex h-auto w-full min-w-[150px] flex-col rounded-xl  bg-clip-border  text-white shadow-xl shadow-blue-gray-900/5">
-    <form hx-post={{ route('auction.search') }} hx-target="[hx-auction-grid]" hx-swap="outerHTML"
-        hx-trigger="input change from:body delay:500ms" hx-push-url="true"
+    class="flex h-auto w-full min-w-[150px] flex-col rounded-xl  bg-clip-border  text-white shadow-xl shadow-blue-gray-900/5 sticky top-0">
+    <form id="sidebar-form" hx-post={{ route('auction.search') }} hx-target="[hx-auction-grid]" hx-swap="outerHTML"
+        hx-trigger="input change from:body delay:500ms" hx-push-url="true" hx-on::after-request="window.scrollTo({top: 0, behavior: 'smooth'})"
         class="flex flex-col gap-1 pr-2 font-inter text-base font-normal">
         @csrf
         <div class="p-2 mb-2">
@@ -25,7 +25,7 @@
             <div class="relative flex flex-col text-primary  rounded-xl bg-clip-border">
 
                 <div role="button"
-                    class="flex items-center w-full p-0 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-accent focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
+                    class="flex items-center w-full p-0 leading-tight transition-all rounded-lg outline-none text-start hover:bg-blue-gray-50 hover:bg-opacity-80 hover:text-blue-gray-900 focus:bg-blue-gray-50 focus:bg-opacity-80 focus:text-blue-gray-900 active:bg-blue-gray-50 active:bg-opacity-80 active:text-blue-gray-900">
                     <label htmlFor="category" class="flex items-center w-full px-3 py-2 cursor-pointer">
                         <div class="grid mr-3 place-items-center">
                             <div class="inline-flex items-center">
