@@ -1,44 +1,4 @@
 <x-app-layout>
-    {{-- <div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900 dark:text-gray-100 text-wrap">
-                {{ $auction->title }}
-                {{ $auction->description }}
-                <div hx-get={{ route('auction.latestBid', $auction) }} hx-swap="innerHTML" hx-trigger="load delay:3s">
-                    
-                </div>
-                
-                {{ $auction->end_time }}
-                {{ $auction->delivery_type }}
-                {{ $auction->auction_type }}
-
-                {{ $auction->seller->email }}
-
-                
-                @foreach ($auction->images as $image)
-                <img src="{{ asset('storage/'.$image->path) }}" alt="image" class="w-1/4">
-                @endforeach
-            </div>
-            <form hx-post="{{ route('auction.bid', $auction) }}" hx-target="body" hx-swap="outerHTML" hx-boost="false">
-                @csrf
-                <input type="number" name="bid" placeholder="£" autocomplete="false" required pattern="^\d+(\.\d{1,2})?$" step="0.01" 
-                @if ($auction->end_time < now()) disabled @endif>
-                <x-primary-button>Place bid</x-primary-button>
-            </form>
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-        </div>
-    </div>
-</div> --}}
-
     @php
         //temporary rating
         $rating = 3.2;
@@ -96,9 +56,10 @@
 
                                 </div>
                                 @if ($auction->images->get($index)->flagged)
-                                <p class="text-white absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 bg-red-500 p-4">Image contains sensitive material</p>
+                                    <p
+                                        class="text-white absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 bg-red-500 p-4">
+                                        Image contains sensitive material</p>
                                 @endif
-                                
                             @endfor
                         @else
                             @for ($index = 0; $index < 3; $index++)
@@ -107,7 +68,9 @@
                                         src="{{ asset('storage/' . $auction->images->get($index)->path) }}" />
                                 </div>
                                 @if ($auction->images->get($index)->flagged)
-                                <p class="text-white absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 bg-red-500 p-4">Image contains sensitive material</p>
+                                    <p
+                                        class="text-white absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 bg-red-500 p-4">
+                                        Image contains sensitive material</p>
                                 @endif
                             @endfor
                             <div class="relative mr-4 my-2">
@@ -118,7 +81,9 @@
                                         class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-800 px-6 py-4 bg-opacity-80">{{ $auction->images()->count() - 4 }}+</span>
                                 @endif
                                 @if ($auction->images->get($index)->flagged)
-                                    <p class="text-white absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 bg-red-500 p-4">Image contains sensitive material</p>
+                                    <p
+                                        class="text-white absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 bg-red-500 p-4">
+                                        Image contains sensitive material</p>
                                 @endif
                             </div>
                         @endif
@@ -164,7 +129,7 @@
                             Features
                         </h2>
                         <p class="text-gray-400">
-                            {{$auction->features}}
+                            {{ $auction->features }}
                         </p>
                     </div>
 
@@ -174,54 +139,60 @@
                                 hx-trigger="load, every 15s">
                             </div>
                         </span>
-                        
+
                     </div>
 
                     @if ($auction->seller->id == auth()->id())
-                    <div class="mb-4">
-                        <ul>
-                            <li>This auction is currently:<div class="inline-block ml-2 text-green-400 animate-bounce">{{ $auction->status }}<div><li>
-                        </ul>
-                    </div>
+                        <div class="mb-4">
+                            <ul>
+                                <li>This auction is currently:<div
+                                        class="inline-block ml-2 text-green-400 animate-bounce">{{ $auction->status }}
+                                        <div>
+                                <li>
+                            </ul>
+                        </div>
                     @endif
                     @if ($errors->any())
-                    <div class="text-red-400 animate-pulse">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+                        <div class="text-red-400 animate-pulse">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
                     @endif
-                    @if ($auction->winner_id == auth()->id())
-                    <div class="flex items-center mb-4">
-                        <form action="{{ route('payment.checkout', $auction)}}" method="POST"
-                            hx-boost="false">
-                            @csrf
-                            <button class="ml-4 px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60"
-                            >
-                                PROCEED TO PAYMENT
-                            </button>
-                        </form>
-                    </div>
+                    @if ($auction->winner_id == auth()->id() && Auth::check())
+                        <div class="flex items-center mb-4">
+                            <form action="{{ route('payment.checkout', $auction) }}" method="POST" hx-boost="false">
+                                @csrf
+                                <button
+                                    class="ml-4 px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60">
+                                    PROCEED TO PAYMENT
+                                </button>
+                            </form>
+                        </div>
                     @else
-                    <div class="flex items-center mb-4">
-                        <form hx-post="{{ route('auction.bid', $auction) }}" hx-target="body" hx-swap="outerHTML"
-                            hx-boost="false">
-                            @csrf
-                            <input class="text-black disabled:opacity-80" type="text" name="bid" placeholder="£" autocomplete="false"
-                                required pattern="^\d+(\.\d{1,2})?$" @if ($auction->end_time < now() || auth()->id() == $auction->seller->id) disabled @endif>
-                            <button class="ml-4 px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60"
-                            @if (auth()->id() == $auction->seller->id) disabled @endif>
-                                PLACE BID
-                            </button>
-                        </form>
-                    </div>
+                        <div class="flex items-center mb-4">
+                            <form hx-post="{{ route('auction.bid', $auction) }}" hx-target="body" hx-swap="outerHTML"
+                                hx-boost="false">
+                                @csrf
+                                <input class="text-black disabled:opacity-80" type="text" name="bid"
+                                    placeholder="£" autocomplete="false" required pattern="^\d+(\.\d{1,2})?$"
+                                    @if ($auction->end_time < now() || auth()->id() == $auction->seller->id) disabled @endif>
+                                <button
+                                    class="ml-4 px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60"
+                                    @if (auth()->id() == $auction->seller->id) disabled @endif>
+                                    PLACE BID
+                                </button>
+                            </form>
+                        </div>
                     @endif
 
                     @if ($auction->seller->id != auth()->id())
-                    <p class="text-blue-400 hover:underline cursor-pointer">
-                        <a href="/messages/{{ $auction->seller->id }}" hx-boost="false"> Message seller for more information </a></p>
+                        <p class="text-blue-400 hover:underline cursor-pointer">
+                            <a href="/messages/{{ $auction->seller->id }}" hx-boost="false"> Message seller for more
+                                information </a>
+                        </p>
                     @endif
                     <p class="text-gray-600 text-sm mb-4">
                         <span>Ends on {{ $auction->end_time->isoFormat('MMMM Do YYYY, h:mm:ss a') }}.</span>

@@ -185,7 +185,7 @@ class AuctionController extends Controller
                 return $q->where('delivery_type', $deliveryType);
             });
             
-            $auctions = $auctionsQuery->paginate($request->input('per_page', 25), ['*'], 'page', $request->query('page', 1)
+            $auctions = $auctionsQuery->paginate($request->input('per_page', 10), ['*'], 'page', $request->query('page', 1)
             )->appends($request->all());
 
         return $auctions;

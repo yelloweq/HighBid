@@ -23,7 +23,7 @@
                 <div id="latest-bid-{{ $auction->id }}"
                 class="auction-card__price font-medium text-xl transition-all duration-300 ease-in-out"
                     hx-get={{ route('auction.latestBid', $auction) }} hx-swap="innerHTML" hx-target="#latest-bid-{{ $auction->id }}" hx-push-url="false"
-                    hx-trigger="load, every 15s">
+                    hx-trigger="intersect, every 60s">
                     <div class="max-w-full animate-pulse">
                         <div
                         class="block w-20 h-6 mb-4 font-sans text-5xl antialiased font-semibold leading-tight tracking-normal bg-gray-400 rounded-full text-inherit">
