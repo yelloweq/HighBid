@@ -19,6 +19,7 @@ use App\Models\Watcher;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Ramsey\Uuid\Uuid;
 
@@ -111,42 +112,57 @@ class AuctionController extends Controller
         return view('auction.auction-view', ['auction' => $auction]);
     }
 
-    public function bid(Request $request, Auction $auction): View
+    public function bid(Request $request, Auction $auction): Response
     {
         if ($auction->status !== 'Active' || $auction->end_time < Carbon::now()) {
-            $errors = new \Illuminate\Support\MessageBag(['Auction has ended']);
-            return view('auction.auction-view', ['auction' => $auction, 'errors' => $errors]);
+            return response(view('components.error', ['message' => 'Auction has ended']));
         }
         if ($auction->seller->id == $request->user()->id) {
-            $errors = new \Illuminate\Support\MessageBag(['You cannot bid on your own auction']);
-            return view('auction.auction-view', ['auction' => $auction, 'errors' => $errors]);
+            return response(view('components.error', ['message' => 'You cannot bid on your own auction']));
         }
+    
         $currentHighestBidInPence = $auction->getHighestBid();
+        $bidAmountInPence = $request->input('bid') * 100;
 
         $validator = Validator::make($request->all(), [
             'bid' => [
                 'required',
                 'numeric',
-                'regex:/^\d+(\.\d{1,2})?$/',
-                function ($attribute, $value, $fail) use ($currentHighestBidInPence) {
-                    if ($value * 100 <= $currentHighestBidInPence) {
-                        $fail($attribute . ' must be higher than ' . Money::GBP($currentHighestBidInPence));
-                    }
-                },
+                'regex:/^\d+(\.\d{1,2})?$/'
             ],
         ]);
 
+        $validator->after(function ($validator) use ($currentHighestBidInPence, $bidAmountInPence) {
+            if ($bidAmountInPence <= $currentHighestBidInPence) {
+                $validator->errors()->add('bid', 'Your bid must be higher than ' . Money::GBP($currentHighestBidInPence));
+            }
+        });
+
         if ($validator->fails()) {
-            return view('auction.auction-view', ['auction' => $auction, 'errors' => $validator->errors()]);
+            return response(view('components.error', ['message' => $validator->errors()->first()]));
         }
-
-        $auction->bids()->create([
-            'amount' => $request->input('bid') * 100,
-            'user_id' => $request->user()->id,
-        ]);
-
-        return view('auction.auction-view', ['auction' => $auction, 'errors' => new \Illuminate\Support\MessageBag()]);
+    
+        $bidIncrement = $auction->getBidIncrement();
+        $newBidValueWithIncrement = $currentHighestBidInPence + $bidIncrement;
+        
+        $isAutobid = $request->input('auto_bid') == '1';
+    
+        $incrementedBidAmount = $isAutobid && ($newBidValueWithIncrement <= $bidAmountInPence)
+            ? $newBidValueWithIncrement
+            : $bidAmountInPence;
+    
+        DB::transaction(function () use ($auction, $request, $isAutobid, $bidAmountInPence, $incrementedBidAmount) {
+            $auction->bids()->create([
+                'user_id' => $request->user()->id,
+                'auto_bid' => $isAutobid,
+                'amount' => $bidAmountInPence,
+                'current_amount' => $incrementedBidAmount,
+            ]);
+        });
+    
+        return response(view('components.success', ['message' => "Bid placed successfully"]));
     }
+
 
     public function latestBid(Auction $auction): View
     {
@@ -205,5 +221,14 @@ class AuctionController extends Controller
             ->get();
         
         return view('components.limited-auctions-grid', ['auctions' => $auctions]);
+    }
+
+    public function updateAuctionWithAutoBid(Auction $auction) 
+    {
+        $highest_autobid = $auction->bids->where('auto_bid', true)->max('amount');
+        $highest_bid = $auction->bids->where('auto_bid', false)->max('amount');
+        if ($highest_autobid > $highest_bid) {
+            $auction->update(['price' => $highest_autobid]);
+        }
     }
 }

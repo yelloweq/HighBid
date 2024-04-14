@@ -4,6 +4,18 @@
         $rating = 3.2;
     @endphp
 
+    @push('styles')
+    <style>
+        #successMessage.htmx-added {
+            opacity: 0;
+        }
+        #successMessage {
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+    </style>
+    @endpush
+
     <div class="max-w-11xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
         <div class="py-6">
             <!-- Breadcrumb -->
@@ -124,7 +136,7 @@
                     <p class="text-gray-400 mb-4">
                         {{ $auction->description }}
                     </p>
-                    <div class="mb-4">
+                    <div class="mb-8">
                         <h2 class="font-semibold mb-1">
                             Features
                         </h2>
@@ -139,10 +151,9 @@
                                 hx-trigger="load, every 15s">
                             </div>
                         </span>
-
                     </div>
 
-                    @if ($auction->seller->id == auth()->id())
+                    @if ($auction->seller->id == auth()->id() || true)
                         <div class="mb-4">
                             <ul>
                                 <li>This auction is currently:<div
@@ -173,11 +184,18 @@
                         </div>
                     @else
                         <div class="flex items-center mb-4">
-                            <form hx-post="{{ route('auction.bid', $auction) }}" hx-target="body" hx-swap="outerHTML"
+                            <form hx-post="{{ route('auction.bid', $auction) }}" hx-target="#messages" hx-swap="innterHTML"
                                 hx-boost="false">
                                 @csrf
+                                <div class="inline-flex flex-col align-middle justify-center items-center p-4">
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" name="auto_bid" id="auto_bid" class="mr-2" value="1" onchange="toggleAutoBidLabel(this)">
+                                        <span id="auto_bid_label" class="w-28">Autobid: OFF</span>
+                                    </label>
+                                </div>
+                                
                                 <input class="text-black disabled:opacity-80" type="text" name="bid"
-                                    placeholder="£" autocomplete="false" required pattern="^\d+(\.\d{1,2})?$"
+                                    placeholder="£" autocomplete="false" required pattern="^\d+(\.\d{1,2})?$" id="bid"
                                     @if ($auction->end_time < now() || auth()->id() == $auction->seller->id) disabled @endif>
                                 <button
                                     class="ml-4 px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60"
@@ -187,7 +205,8 @@
                             </form>
                         </div>
                     @endif
-
+                    <div id="messages" class="w-full"></div>
+                
                     @if ($auction->seller->id != auth()->id())
                         <p class="text-blue-400 hover:underline cursor-pointer">
                             <a href="/messages/{{ $auction->seller->id }}" hx-boost="false"> Message seller for more
@@ -260,3 +279,19 @@
         </div>
     </div>
 </x-app-layout>
+
+
+<script>
+    function toggleAutoBidLabel(checkbox) {
+        var label = document.getElementById('auto_bid_label');
+        var bid = document.getElementById('bid');
+        if (checkbox.checked) {
+            label.innerHTML = 'Autobid: ON';
+            bid.placeholder = "£ (MAX BID)";
+        } else {
+            label.innerHTML = 'Autobid: OFF';
+            bid.placeholder = "£";
+        }
+    }
+    </script>
+    

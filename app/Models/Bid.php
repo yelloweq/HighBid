@@ -19,6 +19,8 @@ class Bid extends Model
         'auction_id',
         'user_id',
         'amount',
+        'current_amount',
+        'auto_bid',
     ];
 
     /**
@@ -26,7 +28,9 @@ class Bid extends Model
      *
      * @var array<string, string>
      */
-    protected $casts = [];
+    protected $casts = [
+        'auto_bid' => 'boolean',
+    ];
 
     public function user(): BelongsTo
     {

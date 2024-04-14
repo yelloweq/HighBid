@@ -26,6 +26,7 @@
         
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         @include('flatpickr::components.style')
+        @stack('styles')
     </head>
     <body class="font-inter antialiase bg-blue-primary" hx-boost="true">
         <div class="min-h-screen" >

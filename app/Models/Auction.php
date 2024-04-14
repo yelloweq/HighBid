@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\AuctionType;
 use App\Enums\DeliveryType;
+use App\Helpers\BidIncrementHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -93,8 +94,13 @@ class Auction extends Model
         }
     }
 
-    public function getHighestBid(): float
+    public function getHighestBid(): int
     {
-        return $this->bids->max('amount') ?? $this->price;
+        return (int) $this->bids->max('current_amount') ?? $this->price;
+    }
+
+    public function getBidIncrement(): int
+    {
+        return BidIncrementHelper::getBidIncrement($this->getHighestBid());
     }
 }
