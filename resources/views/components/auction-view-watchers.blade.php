@@ -1,5 +1,5 @@
 @if ($watchersCount > 0)
-<div class="text-orange-400 ml-auto">
+<div class="text-orange-400 text-center">
     <i class="fa-solid fa-fire-flame-curved animate-pulse"></i><span class="ml-2">
         {{$watchersCount}} 
         @if ($watchersCount > 1) 

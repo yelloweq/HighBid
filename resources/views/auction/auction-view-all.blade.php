@@ -21,7 +21,7 @@ document.body.addEventListener('htmx:afterSwap', function(event) {
         grid.setAttribute('data-page', currentPage);  // Update the data-page attribute
         
         // Update the hx-post attribute for the next potential load
-        grid.setAttribute('hx-post', `{{ route('auction.search') }}?page=${currentPage}&scroll=true`);
+        grid.setAttribute('hx-post', `{{ route('auction.search') }}?page=${currentPage}`);
     }
 });
 
@@ -29,7 +29,7 @@ document.querySelector('#sidebar-form').addEventListener('change', function() {
     // Reset page number on any form change
     var grid = document.getElementById('auction-grid');
     grid.setAttribute('data-page', '1');
-    grid.setAttribute('hx-post', `{{ route('auction.search') }}?page=1&scroll=true`);
+    grid.setAttribute('hx-post', `{{ route('auction.search') }}?page=1`);
 });
 <script>
 @endpush

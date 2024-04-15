@@ -42,7 +42,6 @@
                     Following
                 </x-pill-button>
             </form>
-            {{-- htmx request from button to change filtering on page --}}
         </div>
         <x-dashboard-auction-grid :auctions="$auctions"> 
 

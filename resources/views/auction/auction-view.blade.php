@@ -5,15 +5,26 @@
     @endphp
 
     @push('styles')
-    <style>
-        #successMessage.htmx-added {
-            opacity: 0;
-        }
-        #successMessage {
-            opacity: 1;
-            transition: opacity 1s ease-out;
-        }
-    </style>
+        <style>
+            #successMessage.htmx-added {
+                opacity: 0;
+            }
+
+            #successMessage {
+                opacity: 1;
+                transition: opacity 1s ease-out;
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            .new-bid {
+                animation: fadeIn 1s ease-in-out;
+            }
+
+        </style>
     @endpush
 
     <div class="max-w-11xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
@@ -108,123 +119,132 @@
                     </div>
                 </div>
                 <!-- Content -->
-                <div class="md:w-1/2">
-                    <h1 class="text-3xl font-semibold mb-2">
+                <div class="md:w-1/2 grid grid-cols-2">
+                    <h1 class="text-3xl font-semibold mb-2 col-span-2">
                         {{ $auction->title }}
                     </h1>
-                    <div class="flex items-center mb-4">
-                        <span>@</span><span class="mr-2">{{ $auction->seller->username }}</span>
+                    <div class="auction-info">
 
-                        <div class="text-yellow-400">
-                            @for ($i = 1; $i <= 5; $i++)
-                                @if ($rating >= $i)
-                                    <i class="fas fa-star"></i> <!-- Full star -->
-                                @elseif ($rating >= $i - 0.5)
-                                    <i class="fas fa-star-half-alt"></i> <!-- Half star -->
-                                @else
-                                    <i class="far fa-star"></i> <!-- Empty star -->
-                                @endif
-                            @endfor
+                        <div class="flex items-center mb-4">
+                            <span>@</span><span class="mr-2">{{ $auction->seller->username }}</span>
+
+                            <div class="text-yellow-400">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    @if ($rating >= $i)
+                                        <i class="fas fa-star"></i> <!-- Full star -->
+                                    @elseif ($rating >= $i - 0.5)
+                                        <i class="fas fa-star-half-alt"></i> <!-- Half star -->
+                                    @else
+                                        <i class="far fa-star"></i> <!-- Empty star -->
+                                    @endif
+                                @endfor
+                            </div>
+                            <span class="text-gray-400 text-sm ml-3">
+                                (753)
+                            </span>
                         </div>
-                        <span class="text-gray-400 text-sm ml-3">
-                            (753)
-                        </span>
-                        <div class="ml-auto" id="watchersCount"
+                        <p class="text-gray-400 mb-4">
+                            {{ $auction->description }}
+                        </p>
+                        <div class="mb-8">
+                            <h2 class="font-semibold mb-1">
+                                Features
+                            </h2>
+                            <p class="text-gray-400">
+                                {{ $auction->features }}
+                            </p>
+                        </div>
+
+                        <div class="flex items-center mb-4">
+                            <span class="text-2xl font-semibold">
+                                <div hx-get={{ route('auction.latestBid', $auction) }} hx-swap="innerHTML"
+                                    hx-trigger="load, every 15s">
+                                </div>
+                            </span>
+                        </div>
+
+                        @if ($auction->seller->id == auth()->id() || true)
+                            <div class="mb-4">
+                                <ul>
+                                    <li>This auction is currently:<div
+                                            class="inline-block ml-2 text-green-400 animate-bounce">
+                                            {{ $auction->status }}
+                                            <div>
+                                    <li>
+                                </ul>
+                            </div>
+                        @endif
+                        @if ($auction->winner_id == auth()->id() && Auth::check())
+                            <div class="flex items-center mb-4">
+                                <form action="{{ route('payment.checkout', $auction) }}" method="POST"
+                                    hx-boost="false">
+                                    @csrf
+                                    <button
+                                        class="px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60 w-full">
+                                        PROCEED TO PAYMENT
+                                    </button>
+                                </form>
+                            </div>
+                        @else
+                            <div class="flex items-center mb-4">
+                                <form hx-post="{{ route('auction.bid', $auction) }}" hx-target="#messages"
+                                    hx-swap="innterHTML" hx-boost="false" class="w-full">
+                                    @csrf
+
+                                    <div class="flex align-middle items-center justify-between mb-4">
+                                        <input class="text-black disabled:opacity-80" type="text" name="bid"
+                                            placeholder="£" autocomplete="false" required pattern="^\d+(\.\d{1,2})?$"
+                                            id="bid" @if ($auction->end_time < now() || auth()->id() == $auction->seller->id) disabled @endif></input>
+                                        <label class="flex items-center cursor-pointer">
+                                            <input type="checkbox" name="auto_bid" id="auto_bid" class="mr-2"
+                                                value="1" onchange="toggleAutoBidLabel(this)">
+                                            <span id="auto_bid_label" class="w-28">Autobid: OFF</span>
+                                        </label>
+
+                                    </div>
+                                    <button
+                                        class="px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60 w-full"
+                                        @if (auth()->id() == $auction->seller->id) disabled @endif>
+                                        PLACE BID
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
+                        <div id="messages" class="w-full"></div>
+
+                        @if ($auction->seller->id != auth()->id())
+                            <p class="text-blue-400 hover:underline cursor-pointer">
+                                <a href="/messages/{{ $auction->seller->id }}" hx-boost="false"> Message seller for
+                                    more
+                                    information </a>
+                            </p>
+                        @endif
+                        <p class="text-gray-600 text-sm mb-4">
+                            <span>Ends on {{ $auction->end_time->isoFormat('MMMM Do YYYY, h:mm:ss a') }}.</span>
+                        </p>
+                        <p class="text-gray-600 text-sm">
+                            365 day returns.
+                            <a class="text-blue-600" href="#">
+                                Return Policy
+                            </a>
+                            .
+                        </p>
+                    </div>
+                    <div class="bid-history">
+                        <div class="" id="watchersCount"
                             hx-get="{{ route('auction.watchers', ['auction' => $auction]) }}"
                             hx-trigger="load, every 10s"></div>
-                    </div>
-                    <p class="text-gray-400 mb-4">
-                        {{ $auction->description }}
-                    </p>
-                    <div class="mb-8">
-                        <h2 class="font-semibold mb-1">
-                            Features
-                        </h2>
-                        <p class="text-gray-400">
-                            {{ $auction->features }}
-                        </p>
+
+                        <h4 class=" text-lg text-center mt-4">Recent bids</h4>
+                        <div hx-get="{{ route('auction.recentBids', $auction) }}" hx-trigger="load, every 10s"
+                            hx-target="this"
+                        class="relative flex flex-col w-full h-full overflow-scroll text-white bg-blue-primary shadow-md bg-clip-border rounded-xl m-4">
                     </div>
 
-                    <div class="flex items-center mb-4">
-                        <span class="text-2xl font-semibold">
-                            <div hx-get={{ route('auction.latestBid', $auction) }} hx-swap="innerHTML"
-                                hx-trigger="load, every 15s">
-                            </div>
-                        </span>
                     </div>
 
-                    @if ($auction->seller->id == auth()->id() || true)
-                        <div class="mb-4">
-                            <ul>
-                                <li>This auction is currently:<div
-                                        class="inline-block ml-2 text-green-400 animate-bounce">{{ $auction->status }}
-                                        <div>
-                                <li>
-                            </ul>
-                        </div>
-                    @endif
-                    @if ($errors->any())
-                        <div class="text-red-400 animate-pulse">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-                    @if ($auction->winner_id == auth()->id() && Auth::check())
-                        <div class="flex items-center mb-4">
-                            <form action="{{ route('payment.checkout', $auction) }}" method="POST" hx-boost="false">
-                                @csrf
-                                <button
-                                    class="ml-4 px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60">
-                                    PROCEED TO PAYMENT
-                                </button>
-                            </form>
-                        </div>
-                    @else
-                        <div class="flex items-center mb-4">
-                            <form hx-post="{{ route('auction.bid', $auction) }}" hx-target="#messages" hx-swap="innterHTML"
-                                hx-boost="false">
-                                @csrf
-                                <div class="inline-flex flex-col align-middle justify-center items-center p-4">
-                                    <label class="flex items-center cursor-pointer">
-                                        <input type="checkbox" name="auto_bid" id="auto_bid" class="mr-2" value="1" onchange="toggleAutoBidLabel(this)">
-                                        <span id="auto_bid_label" class="w-28">Autobid: OFF</span>
-                                    </label>
-                                </div>
-                                
-                                <input class="text-black disabled:opacity-80" type="text" name="bid"
-                                    placeholder="£" autocomplete="false" required pattern="^\d+(\.\d{1,2})?$" id="bid"
-                                    @if ($auction->end_time < now() || auth()->id() == $auction->seller->id) disabled @endif>
-                                <button
-                                    class="ml-4 px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60"
-                                    @if (auth()->id() == $auction->seller->id) disabled @endif>
-                                    PLACE BID
-                                </button>
-                            </form>
-                        </div>
-                    @endif
-                    <div id="messages" class="w-full"></div>
-                
-                    @if ($auction->seller->id != auth()->id())
-                        <p class="text-blue-400 hover:underline cursor-pointer">
-                            <a href="/messages/{{ $auction->seller->id }}" hx-boost="false"> Message seller for more
-                                information </a>
-                        </p>
-                    @endif
-                    <p class="text-gray-600 text-sm mb-4">
-                        <span>Ends on {{ $auction->end_time->isoFormat('MMMM Do YYYY, h:mm:ss a') }}.</span>
-                    </p>
-                    <p class="text-gray-600 text-sm">
-                        365 day returns.
-                        <a class="text-blue-600" href="#">
-                            Return Policy
-                        </a>
-                        .
-                    </p>
-                    <div
-                        class=" hidden grid lg:grid-rows-2 lg:grid-cols-5 sm:grid-rows-3 sm:grid-cols-3 items-center mt-4 bg-blue-secondary justify-center rounded-md flex-wrap p-6 text-center">
+                    {{-- <div
+                        class="grid lg:grid-rows-2 lg:grid-cols-5 sm:grid-rows-3 sm:grid-cols-3 items-center mt-4 bg-blue-secondary justify-center rounded-md flex-wrap p-6 text-center">
                         <div class="text-gray-400 flex flex-col items-center mb-4">
                             <dt class="mb-2 min-w-24">water-resistant</dt>
                             <dd><i class="fa-regular fa-circle-check fa-lg"></i></dd>
@@ -273,7 +293,7 @@
                             <dt class="mb-2 min-w-24">ph</dt>
                             <dd><i class="fa-regular fa-circle-check fa-lg"></i></dd>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
@@ -293,5 +313,17 @@
             bid.placeholder = "£";
         }
     }
-    </script>
-    
+
+    document.addEventListener('htmx:afterSwap', function(event) {
+        if (!event.detail.target.matches('.top-bid')) return;
+
+        const newBidId = event.detail.target.getAttribute('data-bid-amount');
+        const lastBidId = sessionStorage.getItem('lastBidId');
+
+        if (newBidId !== lastBidId) {
+            event.detail.target.classList.add('new-bid');
+            sessionStorage.setItem('lastBidId', newBidId);
+        }
+    });
+
+</script>

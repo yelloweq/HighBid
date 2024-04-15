@@ -31,6 +31,8 @@ Route::get('/faq', [FAQController::class, 'index'])->name('faq');
 Route::get('/auction/{auction}/watchers', [AuctionController::class, 'getUsersWatching'])->name('auction.watchers');
 Route::get('/auction/{auction}/latest_bid', [AuctionController::class, 'latestBid'])->name('auction.latestBid');
 Route::get('/auction/limited', [AuctionController::class, 'getLimitedAuctions'])->name('auctions.limited');
+Route::get('/auction/{auction}/recent-bids', [AuctionController::class, 'getRecentBidsForAuction'])->name('auction.recentBids');
+Route::post('/auction/{auction}', [AuctionController::class, 'bid'])->name('auction.bid');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'view'])->name('dashboard');
@@ -42,7 +44,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/auction', [AuctionController::class, 'store'])->name('auction.store');
     Route::get('/auction/create', [AuctionController::class, 'create'])->name('auction.create');
-    Route::post('/auction/{auction}', [AuctionController::class, 'bid'])->name('auction.bid');
+    
 
     Route::post('/upload/images', [AuctionImageController::class, 'store'])->name('auction.images.store');
 

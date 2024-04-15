@@ -53,12 +53,12 @@ class Auction extends Model
      */
     public function seller(): BelongsTo
     {
-        return $this->belongsTo(User::class,'seller_id','id');
+        return $this->belongsTo(User::class, 'seller_id', 'id');
     }
 
     public function winner(): HasOne
     {
-        return $this->hasOne(User::class,'id','winner_id');
+        return $this->hasOne(User::class, 'id', 'winner_id');
     }
 
     public function bids(): HasMany
@@ -94,13 +94,28 @@ class Auction extends Model
         }
     }
 
-    public function getHighestBid(): int
+    public function getCurrentHighestBid(): ?Bid
     {
-        return (int) $this->bids->max('current_amount') ?? $this->price;
+        return $this->bids()->orderByDesc('current_amount')->first();
+    }
+
+    public function getCurrentHighestBidder(): ?User
+    {
+        return $this->bids()->where('current_amount', $this->getCurrentHighestBid()->current_amount)->first()?->user;
+    }
+
+    public function getHighestBid(): ?Bid
+    {
+        return $this->bids()->orderByDesc('amount')->first();
+    }
+
+    public function getHighestBidder(): ?User
+    {
+        return $this->getHighestBid()?->user;
     }
 
     public function getBidIncrement(): int
     {
-        return BidIncrementHelper::getBidIncrement($this->getHighestBid());
+        return BidIncrementHelper::getBidIncrement($this->getCurrentHighestBid()->current_amount);
     }
 }

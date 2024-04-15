@@ -18,10 +18,13 @@ class BidFactory extends Factory
      */
     public function definition(): array
     {
+        $bid_amount = fake()->randomNumber(5, false);
+        
         return [
             'auction_id' => Auction::all()->random()->id,
             'user_id' => User::all()->random()->id,
-            'amount' => fake()->randomNumber(5, false)
+            'amount' => $bid_amount,
+            'current_amount' => $bid_amount,
         ];
     }
 }

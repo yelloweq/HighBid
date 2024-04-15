@@ -13,6 +13,7 @@ use App\Models\Auction;
 use App\Http\Requests\CreateAuctionRequest;
 use App\Enums\DeliveryType;
 use App\Enums\AuctionType;
+use App\Jobs\IncrementBidsForAuction;
 use App\Jobs\SetAuctionLive;
 use App\Models\Category;
 use App\Models\Watcher;
@@ -114,16 +115,24 @@ class AuctionController extends Controller
 
     public function bid(Request $request, Auction $auction): Response
     {
-        if ($auction->status !== 'Active' || $auction->end_time < Carbon::now()) {
+        $isAuthenticated = Auth::check();
+        $isNotActive = $auction->status !== 'Active';
+        $hasEnded = $auction->end_time < Carbon::now();
+        $isSeller = $auction->seller->id == $request->user()->id;
+
+        if (!$isAuthenticated) {
+            return response(view('components.error', ['message' => 'You need to be logged in to bid on an auction']));
+        }
+        if ($isNotActive || $hasEnded) {
             return response(view('components.error', ['message' => 'Auction has ended']));
         }
-        if ($auction->seller->id == $request->user()->id) {
+        if ($isSeller) {
             return response(view('components.error', ['message' => 'You cannot bid on your own auction']));
         }
-    
-        $currentHighestBidInPence = $auction->getHighestBid();
-        $bidAmountInPence = $request->input('bid') * 100;
 
+        $bidAmountInPence = $request->input('bid') * 100;
+        $currentHighestBidInPence = $auction->getCurrentHighestBid()->current_amount ?? $auction->price;
+        
         $validator = Validator::make($request->all(), [
             'bid' => [
                 'required',
@@ -141,11 +150,32 @@ class AuctionController extends Controller
         if ($validator->fails()) {
             return response(view('components.error', ['message' => $validator->errors()->first()]));
         }
-    
+
+        $isAutobid = $request->input('auto_bid') == '1';
+        $isCurrentHighestBidder = $auction->getCurrentHighestBidder() ? $auction->getCurrentHighestBidder()->id == $request->user()->id : false;
+
+        if ($isCurrentHighestBidder) {
+            $currentHighestBid = $auction->getCurrentHighestBid();
+
+            if ($currentHighestBid->auto_bid)
+            {
+                $currentHighestBid->update([
+                    'amount' => $bidAmountInPence,
+                ]);
+            } else {
+                $currentHighestBid->update([
+                    'amount' => $bidAmountInPence,
+                    'current_amount' => $bidAmountInPence,
+                ]);
+            }
+
+            IncrementBidsForAuction::dispatch($auction);
+
+            return response(view('components.success', ['message' => 'Successfully updated your bid']));
+        }
+
         $bidIncrement = $auction->getBidIncrement();
         $newBidValueWithIncrement = $currentHighestBidInPence + $bidIncrement;
-        
-        $isAutobid = $request->input('auto_bid') == '1';
     
         $incrementedBidAmount = $isAutobid && ($newBidValueWithIncrement <= $bidAmountInPence)
             ? $newBidValueWithIncrement
@@ -159,6 +189,8 @@ class AuctionController extends Controller
                 'current_amount' => $incrementedBidAmount,
             ]);
         });
+
+        IncrementBidsForAuction::dispatch($auction);
     
         return response(view('components.success', ['message' => "Bid placed successfully"]));
     }
@@ -166,13 +198,15 @@ class AuctionController extends Controller
 
     public function latestBid(Auction $auction): View
     {
-        $latestBid = $auction->bids()->latest()->first();
+        $latestBid = $auction->getCurrentHighestBid()->current_amount ?? $auction->price;
 
-        if ($latestBid != null) {
-            return view('components.auction-view-latest-bid', ['value' => $latestBid->amount]);
-        }
+        return view('components.auction-view-latest-bid', ['value' => $latestBid]);
+    }
 
-        return view('components.auction-view-latest-bid', ['value' => $auction->price]);
+    public function getRecentBidsForAuction(Auction $auction): View
+    {
+        $recentBids = $auction->bids()->orderByDesc('current_amount')->take(10)->get();
+        return view('partials.recent-bids', ['bids' => $recentBids]);
     }
 
     public function getUsersWatching(Auction $auction): View
@@ -221,14 +255,5 @@ class AuctionController extends Controller
             ->get();
         
         return view('components.limited-auctions-grid', ['auctions' => $auctions]);
-    }
-
-    public function updateAuctionWithAutoBid(Auction $auction) 
-    {
-        $highest_autobid = $auction->bids->where('auto_bid', true)->max('amount');
-        $highest_bid = $auction->bids->where('auto_bid', false)->max('amount');
-        if ($highest_autobid > $highest_bid) {
-            $auction->update(['price' => $highest_autobid]);
-        }
     }
 }

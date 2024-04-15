@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Helpers;
 
 class BidIncrementHelper
@@ -19,7 +20,7 @@ class BidIncrementHelper
             29999 => 500,    // Increment by £5 for bids £150-£299.99
             59999 => 1000,   // Increment by £10 for bids £300-£599.99
             149999 => 2000,  // Increment by £20 for bids £600-£1499.99
-            299999 => 5000,  // Increment by £50 for bids £600-£1499.99
+            299999 => 5000,  // Increment by £50 for bids £1499.99-£2999.99
             300000 => 10000, // Increment by £100 for bids £1500 and above
         ];
     }

@@ -1,6 +1,10 @@
 <div class="auction-card bg-blue-secondary hover:cursor-pointer mb-4 flex max-h-[227px] border-b-8  border-blue-thirtiary text-white"
     data-end-time="{{ $auction->end_time }}"
-    hx-get="{{ route('auction.view', ['auction' => $auction]) }}" hx-target="body" hx-swap="outerHTML" hx-push-url="true">
+    hx-get="{{ route('auction.view', ['auction' => $auction]) }}"
+    hx-target="body"
+    hx-swap="outerHTML"
+    hx-push-url="true"
+    >
     <div class="overflow-hidden text-center item-center align-middle ">
         <div class="auction-card__image w-[227px] h-[227px]">
             {{-- <img src="https://i.ebayimg.com/thumbs/images/g/xGQAAOSwPsRlwlJA/s-l300.webp"
