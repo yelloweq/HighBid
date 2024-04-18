@@ -8,6 +8,7 @@ use App\Http\Controllers\AuctionImageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FAQController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HtmxController;
 use App\Http\Controllers\StripeController;
 use App\Http\Middleware\UpdateUserActivity;
 
@@ -33,6 +34,7 @@ Route::get('/auction/{auction}/latest_bid', [AuctionController::class, 'latestBi
 Route::get('/auction/limited', [AuctionController::class, 'getLimitedAuctions'])->name('auctions.limited');
 Route::get('/auction/{auction}/recent-bids', [AuctionController::class, 'getRecentBidsForAuction'])->name('auction.recentBids');
 Route::post('/auction/{auction}', [AuctionController::class, 'bid'])->name('auction.bid');
+Route::get('/remove-element', [HtmxController::class, 'remove'])->name('htmx.remove');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'view'])->name('dashboard');

@@ -118,16 +118,25 @@ class AuctionController extends Controller
         $isAuthenticated = Auth::check();
         $isNotActive = $auction->status !== 'Active';
         $hasEnded = $auction->end_time < Carbon::now();
-        $isSeller = $auction->seller->id == $request->user()->id;
+        $isSeller = $auction->seller->id == $request->user()?->id;
 
         if (!$isAuthenticated) {
-            return response(view('components.error', ['message' => 'You need to be logged in to bid on an auction']));
+            return response(view('components.message', [
+                'message' => 'You need to be logged in to bid on an auction',
+                'type' => 'error',
+            ]));
         }
         if ($isNotActive || $hasEnded) {
-            return response(view('components.error', ['message' => 'Auction has ended']));
+            return response(view('components.message', [
+                'message' => 'Auction has ended',
+                'type' => 'error',
+            ]));
         }
         if ($isSeller) {
-            return response(view('components.error', ['message' => 'You cannot bid on your own auction']));
+            return response(view('components.message', [
+                'message' => 'You cannot bid on your own auction',
+                'type' => 'error',
+        ]));
         }
 
         $bidAmountInPence = $request->input('bid') * 100;
@@ -148,7 +157,10 @@ class AuctionController extends Controller
         });
 
         if ($validator->fails()) {
-            return response(view('components.error', ['message' => $validator->errors()->first()]));
+            return response(view('components.message', [
+                'message' => $validator->errors()->first(),
+                'type' => 'error',
+            ]));
         }
 
         $isAutobid = $request->input('auto_bid') == '1';
@@ -171,7 +183,10 @@ class AuctionController extends Controller
 
             IncrementBidsForAuction::dispatch($auction);
 
-            return response(view('components.success', ['message' => 'Successfully updated your bid']));
+            return response(view('components.message', [
+                'message' => 'Successfully updated your bid',
+                'type' => 'success',
+            ]));
         }
 
         $bidIncrement = $auction->getBidIncrement();
@@ -192,7 +207,10 @@ class AuctionController extends Controller
 
         IncrementBidsForAuction::dispatch($auction);
     
-        return response(view('components.success', ['message' => "Bid placed successfully"]));
+        return response(view('components.success', [
+            'message' => "Bid placed successfully",
+            'type' => 'success',
+        ]));
     }
 
 
@@ -246,8 +264,7 @@ class AuctionController extends Controller
         $auctions = Auction::where('status', 'Active')
             ->where('end_time', '<', Carbon::now()->addDay())
             ->withCount(['bids' => function($query) {
-                // Count only bids within the last 24 hours
-                $query->where('created_at', '>=', Carbon::now()->subDay());
+                $query->where('updated_at', '>=', Carbon::now()->subDay());
             }])
             ->having('bids_count', '>', 0)
             ->orderByDesc('bids_count')

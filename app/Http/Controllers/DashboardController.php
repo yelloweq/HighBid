@@ -5,14 +5,16 @@ namespace App\Http\Controllers;
 use App\Enums\AuctionStatus;
 use App\Models\Auction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class DashboardController extends Controller
 {
     /**
      * Display the dashboard.
      */
-    public function view(Request $request)
+    public function view(Request $request): View
     {
         $auctions = $request->user()->auctions()->where('status', AuctionStatus::ACTIVE)->orderBy('created_at', 'desc')->paginate($request->input('per_page', 25))
             ->appends($request->all());
@@ -23,7 +25,7 @@ class DashboardController extends Controller
     /**
      * Search for auctions.
      */
-    public function search(Request $request)
+    public function search(Request $request): Response
     {
         $auctions = $this->searchAuctionsFromRequest($request);
 

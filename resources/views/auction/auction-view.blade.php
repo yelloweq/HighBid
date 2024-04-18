@@ -2,17 +2,23 @@
     @php
         //temporary rating
         $rating = 3.2;
+        $isAuthenticated = Auth::check();
     @endphp
 
     @push('styles')
         <style>
-            #successMessage.htmx-added {
+            #message.htmx-added {
                 opacity: 0;
             }
 
-            #successMessage {
+            #message.htmx-swapping {
+                opacity: 0;
+                transition: opacity 500ms ease-out;
+            }
+
+            #message {
                 opacity: 1;
-                transition: opacity 1s ease-out;
+                transition: opacity 500ms ease-in;
             }
 
             @keyframes fadeIn {
@@ -174,7 +180,7 @@
                                 </ul>
                             </div>
                         @endif
-                        @if ($auction->winner_id == auth()->id() && Auth::check())
+                        @if ($auction->winner_id == auth()->id() && $isAuthenticated)
                             <div class="flex items-center mb-4">
                                 <form action="{{ route('payment.checkout', $auction) }}" method="POST"
                                     hx-boost="false">
@@ -188,7 +194,7 @@
                         @else
                             <div class="flex items-center mb-4">
                                 <form hx-post="{{ route('auction.bid', $auction) }}" hx-target="#messages"
-                                    hx-swap="innterHTML" hx-boost="false" class="w-full">
+                                    hx-swap="innterHTML" hx-boost="false" class="w-full" id="bid-form">
                                     @csrf
 
                                     <div class="flex align-middle items-center justify-between mb-4">
@@ -204,13 +210,15 @@
                                     </div>
                                     <button
                                         class="px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60 w-full"
-                                        @if (auth()->id() == $auction->seller->id) disabled @endif>
+                                        @if (!$isAuthenticated) disabled @endif>
                                         PLACE BID
                                     </button>
                                 </form>
                             </div>
                         @endif
-                        <div id="messages" class="w-full"></div>
+                        <div id="messages" class="w-full min-h-14 mb-2">
+                            
+                        </div>
 
                         @if ($auction->seller->id != auth()->id())
                             <p class="text-blue-400 hover:underline cursor-pointer">
@@ -236,7 +244,7 @@
                             hx-trigger="load, every 10s"></div>
 
                         <h4 class=" text-lg text-center mt-4">Recent bids</h4>
-                        <div hx-get="{{ route('auction.recentBids', $auction) }}" hx-trigger="load, every 10s"
+                        <div hx-get="{{ route('auction.recentBids', $auction) }}" hx-trigger="load, every 10s, from:closest(#bid-form)"
                             hx-target="this"
                         class="relative flex flex-col w-full h-full overflow-scroll text-white bg-blue-primary shadow-md bg-clip-border rounded-xl m-4">
                     </div>
@@ -317,12 +325,12 @@
     document.addEventListener('htmx:afterSwap', function(event) {
         if (!event.detail.target.matches('.top-bid')) return;
 
-        const newBidId = event.detail.target.getAttribute('data-bid-amount');
-        const lastBidId = sessionStorage.getItem('lastBidId');
+        const newBidAmount = event.detail.target.getAttribute('data-bid-amount');
+        const lastBidAmount = sessionStorage.getItem('lastBidAmount');
 
         if (newBidId !== lastBidId) {
             event.detail.target.classList.add('new-bid');
-            sessionStorage.setItem('lastBidId', newBidId);
+            sessionStorage.setItem('lastBidAmount', newBidAmount);
         }
     });
 
