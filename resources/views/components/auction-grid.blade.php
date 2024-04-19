@@ -25,7 +25,24 @@
                     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                    countdownElement.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+                    let displayString = "";
+                    if (days > 0) {
+                        displayString += days + "d ";
+                    }
+                    if (days > 0 || hours > 0) {
+                        displayString += hours + "h ";
+                    }
+                    if (days > 0 || hours > 0 || minutes > 0) {
+                        displayString += minutes + "m ";
+                    }
+                    if (days > 0 || hours > 0 || minutes > 0 || seconds > 0) {
+                        displayString += seconds + "s ";
+                    } else {
+                        displayString = "0s ";  // Display 0 seconds if all are zero
+                    }
+
+                    countdownElement.innerHTML = displayString;
+
                 }
             }
 

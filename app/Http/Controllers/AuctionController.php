@@ -207,7 +207,7 @@ class AuctionController extends Controller
 
         IncrementBidsForAuction::dispatch($auction);
     
-        return response(view('components.success', [
+        return response(view('components.message', [
             'message' => "Bid placed successfully",
             'type' => 'success',
         ]));

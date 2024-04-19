@@ -14,8 +14,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->job(new ClearUnusedImagesFromStorage)->everyFiveMinutes();
-        $schedule->command('auctions:end')->everyMinute();
+        $schedule->job(new ClearUnusedImagesFromStorage)->withoutOverlapping()->everyFiveMinutes();
+        $schedule->command('auctions:end')->withoutOverlapping()->everyMinute();
     }
 
     /**

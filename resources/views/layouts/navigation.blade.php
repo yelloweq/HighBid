@@ -15,7 +15,7 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 @endauth
-                <x-nav-link :href="route('auctions')" :active="request()->routeIs('auctions')">
+                <x-nav-link :href="route('auctions')" :active="request()->routeIs('auctions')" hx-boost="false">
                     {{ __('Auctions') }}
                 </x-nav-link>
                 @auth

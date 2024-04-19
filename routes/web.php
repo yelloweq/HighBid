@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FAQController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HtmxController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\StripeController;
 use App\Http\Middleware\UpdateUserActivity;
 
@@ -35,6 +36,8 @@ Route::get('/auction/limited', [AuctionController::class, 'getLimitedAuctions'])
 Route::get('/auction/{auction}/recent-bids', [AuctionController::class, 'getRecentBidsForAuction'])->name('auction.recentBids');
 Route::post('/auction/{auction}', [AuctionController::class, 'bid'])->name('auction.bid');
 Route::get('/remove-element', [HtmxController::class, 'remove'])->name('htmx.remove');
+Route::get('/forum', [PostController::class, 'index'])->name('forum');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'view'])->name('dashboard');

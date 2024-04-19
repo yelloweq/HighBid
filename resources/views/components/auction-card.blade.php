@@ -1,5 +1,5 @@
 <div class="auction-card bg-blue-secondary hover:cursor-pointer mb-4 flex max-h-[227px] border-b-8  border-blue-thirtiary text-white"
-    data-end-time="{{ $auction->end_time }}"
+    data-end-time="{{ $auction->end_time->format('Y-m-d H:i:s') }}"
     hx-get="{{ route('auction.view', ['auction' => $auction]) }}"
     hx-target="body"
     hx-swap="outerHTML"

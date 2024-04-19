@@ -26,6 +26,7 @@ class Auction extends Model
         'description',
         'features',
         'type',
+        'status',
         'price',
         'delivery_type',
         'winner_id',
