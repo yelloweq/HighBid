@@ -9,8 +9,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FAQController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HtmxController;
-use App\Http\Controllers\PostController;
 use App\Http\Controllers\StripeController;
+use App\Http\Controllers\ThreadController;
 use App\Http\Middleware\UpdateUserActivity;
 
 /*
@@ -36,20 +36,25 @@ Route::get('/auction/limited', [AuctionController::class, 'getLimitedAuctions'])
 Route::get('/auction/{auction}/recent-bids', [AuctionController::class, 'getRecentBidsForAuction'])->name('auction.recentBids');
 Route::post('/auction/{auction}', [AuctionController::class, 'bid'])->name('auction.bid');
 Route::get('/remove-element', [HtmxController::class, 'remove'])->name('htmx.remove');
-Route::get('/forum', [PostController::class, 'index'])->name('forum');
+Route::get('/forum', [ThreadController::class, 'index'])->name('forum');
+Route::get('/forum/thread/create', [ThreadController::class, 'createThread'])->name('thread.create');
+Route::post('forum/thread/store', [ThreadController::class, 'storeThread'])->name('thread.store');
 
+Route::get('forum/threads', [ThreadController::class, 'showThreads'])->name('thread.show');
+
+Route::get('forum/thread/{thread}', [ThreadController::class, 'editThread'])->name('thread.edit');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'view'])->name('dashboard');
     Route::post('dashboard/search', [DashboardController::class, 'search'])->name('dashboard.search');
-    
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::post('/auction', [AuctionController::class, 'store'])->name('auction.store');
     Route::get('/auction/create', [AuctionController::class, 'create'])->name('auction.create');
-    
+
 
     Route::post('/upload/images', [AuctionImageController::class, 'store'])->name('auction.images.store');
 
@@ -62,4 +67,4 @@ Route::get('/auction/{auction}', [AuctionController::class, 'view'])->name('auct
 
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
