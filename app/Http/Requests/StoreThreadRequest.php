@@ -24,10 +24,9 @@ class StoreThreadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',  
-            'body' => 'required|string',         
-            'tags' => 'sometimes|array',           
-            'tags.*' => 'integer|exists:threads_tags,id', 
+            'title' => 'required|string|max:255',
+            'body' => 'required|string',
+            'tags' => 'sometimes|string|exists:tags,name',
         ];
     }
 

@@ -1,8 +1,9 @@
 @props(['threads' => []])
 <tbody id="forum-body">
     @foreach ($threads as $thread)
-        <tr class=" cursor-pointer">
-            <td class="p-4 border-b border-blue-gray-50">
+        <tr>
+            <td class="p-4 border-b border-blue-gray-50" hx-get="{{ route('thread.view', $thread) }}" hx-swap="outerHTML"
+                hx-target="body" hx-push-url="true">
                 <div class="flex items-center gap-3">
                     <div class="flex flex-col">
                         <p class="block font-sans text-sm antialiased font-normal leading-normal text-gray-100">

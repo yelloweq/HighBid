@@ -42,6 +42,7 @@
         <!-- Page Content -->
         <main hx-main-page>
             {{ $slot }}
+            @yield ('content')
         </main>
     </div>
     @stack('scripts')

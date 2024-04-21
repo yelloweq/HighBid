@@ -31,9 +31,14 @@ class Comment extends Model
         return $this->belongsTo(Thread::class);
     }
 
-    public function rating(): MorphMany
+    public function ratings(): MorphMany
     {
         return $this->morphMany(Rating::class, 'rateable');
+    }
+
+    public function getRatingAttribute(): int
+    {
+        return $this->ratings()->sum('value');
     }
 
     public function replies(): HasMany

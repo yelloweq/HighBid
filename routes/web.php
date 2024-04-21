@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FAQController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HtmxController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\ThreadController;
 use App\Http\Middleware\UpdateUserActivity;
@@ -38,11 +39,13 @@ Route::post('/auction/{auction}', [AuctionController::class, 'bid'])->name('auct
 Route::get('/remove-element', [HtmxController::class, 'remove'])->name('htmx.remove');
 Route::get('/forum', [ThreadController::class, 'index'])->name('forum');
 Route::get('/forum/thread/create', [ThreadController::class, 'createThread'])->name('thread.create');
-Route::post('forum/thread/store', [ThreadController::class, 'storeThread'])->name('thread.store');
 
 Route::get('forum/threads', [ThreadController::class, 'showThreads'])->name('thread.show');
+Route::get('forum/thread/{thread}/comments', [ThreadController::class, 'getThreadComments'])->name('thread.comments');
+Route::get('forum/thread/{thread}', [ThreadController::class, 'viewThread'])->name('thread.view');
+Route::get('forum/thread/{thread}/edit', [ThreadController::class, 'editThread'])->name('thread.edit');
 
-Route::get('forum/thread/{thread}', [ThreadController::class, 'editThread'])->name('thread.edit');
+Route::get('thread/tags', [ThreadController::class, 'getThreadTagsList'])->name('thread.tags');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'view'])->name('dashboard');
@@ -55,6 +58,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/auction', [AuctionController::class, 'store'])->name('auction.store');
     Route::get('/auction/create', [AuctionController::class, 'create'])->name('auction.create');
 
+    Route::post('forum/thread/store', [ThreadController::class, 'storeThread'])->name('thread.store');
+
+    Route::post('updateRating/{type}/{model}', [RatingController::class, 'createOrUpdate'])->name('rating.createOrUpdate');
 
     Route::post('/upload/images', [AuctionImageController::class, 'store'])->name('auction.images.store');
 
