@@ -20,7 +20,8 @@ class AuctionImage extends Model
         'path',
         'image_matching_key',
         'rekognition_labels',
-        'flagged'
+        'flagged',
+        'metadata',
     ];
 
     protected $casts = [

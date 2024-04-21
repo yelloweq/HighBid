@@ -18,36 +18,86 @@ class AuctionImageController extends Controller
             if (!$request->hasFile('file') || empty($request->imageMatchingKey)) {
                 return response()->json(['error' => 'Upload failed. Please try again later.']);
             }
-    
+
             Log::info('imageMatchingKey: ' . $request->imageMatchingKey);
-    
+
             foreach ($request->file('file') as $file) {
                 Log::info('foreach image: ' . $file->getClientOriginalName());
                 $image = Image::make($file->getRealPath())->resize(null, 1000, function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
                 });
+                // dd($image->exif());
                 Log::info('foreach image resized');
-    
+
                 $imageHash = md5_file($file->getRealPath());
                 $imagePath = 'uploads/' . $imageHash . '.' . $file->getClientOriginalExtension();
                 Log::info('foreach image path: ' . $imagePath);
-    
+                $metadata = json_encode($this->extractRelevantExifData($image->exif()));
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    Log::error('Error encoding metadata: ' . json_last_error_msg());
+                    $metadata = null;
+                }
+                // dd($image->exif());
                 $image->save(storage_path('app/public/' . $imagePath));
-    
                 AuctionImage::create([
                     'path' => $imagePath,
                     'image_matching_key' => $request->imageMatchingKey,
-                    'user_id' => $request->user()->id
+                    'user_id' => $request->user()->id,
+                    'metadata' => $metadata,
                 ]);
-    
+                Log::info(('metadata: ' . $metadata));
                 Log::info('Image saved to database.');
             }
-    
+
             return response()->json(['success' => 'uploaded successfully']);
         } catch (\Exception $e) {
             Log::error('Upload failed. Error: ' . $e->getMessage());
             return response()->json(['error' => 'Upload failed. Please try again later.']);
         }
+    }
+
+    private function extractRelevantExifData($exifRaw)
+    {
+        $exif = [];
+        if (isset($exifRaw['Model'])) {
+            $exif['Model'] = mb_convert_encoding($exifRaw['Model'], 'UTF-8', 'auto');
+        }
+
+        if (isset(
+            $exifRaw['GPSLatitude'],
+            $exifRaw['GPSLatitudeRef'],
+            $exifRaw['GPSLongitude'],
+            $exifRaw['GPSLongitudeRef']
+        )) {
+            $exif['GPS'] = [
+                'Latitude' => $this->processGpsInfo($exifRaw['GPSLatitude'], $exifRaw['GPSLatitudeRef']),
+                'Longitude' => $this->processGpsInfo($exifRaw['GPSLongitude'], $exifRaw['GPSLongitudeRef'])
+            ];
+        }
+
+        return $exif;
+    }
+
+    private function processGpsInfo($gpsData, $ref)
+    {
+        $degrees = (count($gpsData) > 0) ? $this->convertGpsToNumber($gpsData[0]) : 0;
+        $minutes = (count($gpsData) > 1) ? $this->convertGpsToNumber($gpsData[1]) : 0;
+        $seconds = (count($gpsData) > 2) ? $this->convertGpsToNumber($gpsData[2]) : 0;
+
+        $coordinate = $degrees + ($minutes / 60) + ($seconds / 3600);
+        if ($ref == 'S' || $ref == 'W') {
+            $coordinate *= -1;
+        }
+        return $coordinate;
+    }
+
+    private function convertGpsToNumber($coordPart)
+    {
+        $parts = explode('/', $coordPart);
+        if (count($parts) == 2) {
+            return floatval($parts[0]) / floatval($parts[1]);
+        }
+        return floatval($coordPart);
     }
 }

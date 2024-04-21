@@ -14,6 +14,7 @@ use App\Http\Requests\CreateAuctionRequest;
 use App\Enums\DeliveryType;
 use App\Enums\AuctionType;
 use App\Jobs\IncrementBidsForAuction;
+use App\Jobs\ProcessImageMetadata;
 use App\Jobs\SetAuctionLive;
 use App\Models\Category;
 use App\Models\Watcher;
@@ -63,7 +64,6 @@ class AuctionController extends Controller
 
         return response()->view('components.auction-grid', ['auctions' => $auctions])
             ->header('HX-Push-Url', $newPath);
-
     }
 
 
@@ -106,6 +106,7 @@ class AuctionController extends Controller
             Log::info('Dispatching job to match images to auction and process with rekognition');
             MatchUploadedImagesToAuction::withChain([
                 new ProcessImageWithRekognition($auction),
+                new ProcessImageMetadata($auction),
                 new SetAuctionLive($auction)
             ])->dispatch($auction, $request->auctionCreateKey);
         }
@@ -136,12 +137,12 @@ class AuctionController extends Controller
             return response(view('components.message', [
                 'message' => 'You cannot bid on your own auction',
                 'type' => 'error',
-        ]));
+            ]));
         }
 
         $bidAmountInPence = $request->input('bid') * 100;
         $currentHighestBidInPence = $auction->getCurrentHighestBid()->current_amount ?? $auction->price;
-        
+
         $validator = Validator::make($request->all(), [
             'bid' => [
                 'required',
@@ -169,8 +170,7 @@ class AuctionController extends Controller
         if ($isCurrentHighestBidder) {
             $currentHighestBid = $auction->getCurrentHighestBid();
 
-            if ($currentHighestBid->auto_bid)
-            {
+            if ($currentHighestBid->auto_bid) {
                 $currentHighestBid->update([
                     'amount' => $bidAmountInPence,
                 ]);
@@ -191,11 +191,11 @@ class AuctionController extends Controller
 
         $bidIncrement = $auction->getBidIncrement();
         $newBidValueWithIncrement = $currentHighestBidInPence + $bidIncrement;
-    
+
         $incrementedBidAmount = $isAutobid && ($newBidValueWithIncrement <= $bidAmountInPence)
             ? $newBidValueWithIncrement
             : $bidAmountInPence;
-    
+
         DB::transaction(function () use ($auction, $request, $isAutobid, $bidAmountInPence, $incrementedBidAmount) {
             $auction->bids()->create([
                 'user_id' => $request->user()->id,
@@ -206,7 +206,7 @@ class AuctionController extends Controller
         });
 
         IncrementBidsForAuction::dispatch($auction);
-    
+
         return response(view('components.message', [
             'message' => "Bid placed successfully",
             'type' => 'success',
@@ -252,9 +252,13 @@ class AuctionController extends Controller
             ->when($request->delivery, function ($q, $deliveryType) {
                 return $q->where('delivery_type', $deliveryType);
             });
-            
-            $auctions = $auctionsQuery->paginate($request->input('per_page', 10), ['*'], 'page', $request->query('page', 1)
-            )->appends($request->all());
+
+        $auctions = $auctionsQuery->paginate(
+            $request->input('per_page', 10),
+            ['*'],
+            'page',
+            $request->query('page', 1)
+        )->appends($request->all());
 
         return $auctions;
     }
@@ -263,14 +267,14 @@ class AuctionController extends Controller
     {
         $auctions = Auction::where('status', 'Active')
             ->where('end_time', '<', Carbon::now()->addDay())
-            ->withCount(['bids' => function($query) {
+            ->withCount(['bids' => function ($query) {
                 $query->where('updated_at', '>=', Carbon::now()->subDay());
             }])
             ->having('bids_count', '>', 0)
             ->orderByDesc('bids_count')
             ->limit(3)
             ->get();
-        
+
         return view('components.limited-auctions-grid', ['auctions' => $auctions]);
     }
 }
