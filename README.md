@@ -1,15 +1,16 @@
-Installation
-* install & run docker
+# <center> HighBid </center>
+## About
+## Dependencies
+* Docker
 
-git clone ...
+## Installation
+
+Clone and open the project
 ```bash
+git clone git@github.com/yelloweq/HighBid && cd HighBid
 ```
 
-```bash
-cd HighBid
-```
-
-Install dependencies
+Install composer dependencies using docker
 ```bash
 docker run --rm \
     -u "$(id -u):$(id -g)" \
@@ -18,33 +19,30 @@ docker run --rm \
     laravelsail/php81-composer:latest \
     composer install --ignore-platform-reqs
 ```
-Generate app key
+Run laravel sail (docker) <br> 
+Generate app key <br>
+Compile Assets 
 ```bash
-./vendor/bin sail php artisan key:generate 
+./vendor/bin/sail up -d && \
+./vendor/bin/sail php artisan key:generate && \
+./vendor/bin/sail npm install && \
+./vendor/bin/sail npm run dev
 ```
 
-Run sail
-```bash
-./vendor/bin/sail up -d
-```
 
-Setup database table
-```bash
-./vendor/bin/sail php artisan migrate
-```
-
-Test data seeding
+### Database Setup
+Seeded database setup
 ```bash
 ./vendor/bin/sail php artisan migrate:fresh --seed
 ```
 
-Running tests
+<small>Alternatively migrate without seeding</small>
 ```bash
-./vendor/bin/sail phpunit
+./vendor/bin/sail php artisan migrate
 ```
 
-Running jobs and scheduler
-for jobs, emails and periodic tasks
+### Jobs & Queues
+Run these commands to ensure that listings expire and emails are sent to users
 ```bash
 ./vendor/bin/sail php artisan queue:work 
 ```
@@ -52,3 +50,15 @@ for jobs, emails and periodic tasks
 ./vendor/bin/sail php artisan schedule:work 
 ```
 
+### Tests
+Unit testing
+```bash
+./vendor/bin/sail phpunit
+```
+<style>
+    h2 {
+        margin:0;;
+        width:100%;
+    };
+    
+</style>
