@@ -7,6 +7,7 @@ use App\Models\Auction;
 use App\Models\Payment;
 use App\Models\User;
 use Database\Seeders\AuctionSeeder;
+use Illuminate\Support\Facades\Config;
 use Stripe\Charge;
 use Stripe\Stripe;
 use Stripe\Transfer;
@@ -17,7 +18,7 @@ class Transaction
     {
         $amount = $auction->getCurrentHighestBid()?->current_amount ?? $auction->price;
 
-        $payout = (int) $amount * config('payment.payment-processor.'.config('payment.payment-processor.default').'.');
+        $payout = (int) $amount * (1 - Config::get('app.platform_fee', 0.05));
 
         Stripe::setApiKey(env('STRIPE_SK'));
 

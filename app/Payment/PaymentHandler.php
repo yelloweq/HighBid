@@ -27,14 +27,5 @@ class PaymentHandler
     public function processPayment(Request $request): void
     {
         //TODO: Implement payment processing
-//        $amount = $request->input('amount');
-//        $paymentMethod = $request->input('payment_method');
-//        $payment = new PaymentHandler($paymentMethod);
-//        $transactionId = $payment->pay($amount);
-
-        // Save the transaction ID to the database or do whatever else you need to do
-        // ...
-
-//        return response()->json(['transaction_id' => $transactionId]);
     }
 }
