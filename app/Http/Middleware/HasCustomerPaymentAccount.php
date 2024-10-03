@@ -17,6 +17,8 @@ class HasCustomerPaymentAccount
      */
     public function handle(Request $request, Closure $next): Response
     {
+        //TODO: remove dd
+        dd("middleware has customer payment account");
         $user = Auth::user();
         if (is_null($user->stripe_customer_id)) {
             return new HtmxResponseClientRedirect(route('stripe.form'));

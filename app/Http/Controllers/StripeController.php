@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session as FacadesSession;
 use Illuminate\Validation\ValidationException;
+use Mauricius\LaravelHtmx\Facades\HtmxResponse;
 use Mauricius\LaravelHtmx\Http\HtmxResponseClientRedirect;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
@@ -24,6 +25,8 @@ class StripeController extends Controller
 {
     public function index(): View
     {
+        //TODO: remove this dd
+        dd("payment index stripe controller");
         return view('payment');
     }
 
@@ -84,14 +87,17 @@ class StripeController extends Controller
     {
         Stripe::setApiKey(config('stripe.sk'));
 
+        //TODO: Consider getting the bid from the winner instead
+        // Why did i do it this way?
         $bid = $auction->getCurrentHighestBid();
+        $user = $auction->winner()->first();
 
         if (!$bid) {
-            return new HtmxResponseClientRedirect(back()->getTargetUrl())->with('error', 'No bids on this auction');
-                //redirect()->back()->with('error', 'No bids on this auction');
+            $back_url = back()->getTargetUrl();
+
+            //TODO: Decide what should happen on missing bid
         }
 
-        $user = $auction->winner()->first();
         if (!$user) {
             Log::error("[AUCTION ID: {{$auction->id}}] Auction winner is null!");
             return new HtmxResponseClientRedirect(route('payment.success', $auction));

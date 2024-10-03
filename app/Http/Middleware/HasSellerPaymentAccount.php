@@ -20,9 +20,8 @@ class HasSellerPaymentAccount
         $user = Auth::user();
         if (is_null($user->stripe_account_id)) {
             return new HtmxResponseClientRedirect(route('create.express'));
-
         }
-        dd("stripe acc in not null");
+
         return $next($request);
     }
 }

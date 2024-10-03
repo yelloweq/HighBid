@@ -23,15 +23,15 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/auctions', [AuctionController::class, 'view_all'])->name('auctions');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/faq', [FAQController::class, 'index'])->name('faq');
+Route::get('/forum', [ThreadController::class, 'index'])->name('forum');
 
 Route::get('/remove-element', [HtmxController::class, 'remove'])->name('htmx.remove');
-Route::get('/forum', [ThreadController::class, 'index'])->name('forum');
-Route::get('/forum/thread/create', [ThreadController::class, 'createThread'])->name('thread.create');
 
-Route::get('forum/threads', [ThreadController::class, 'showThreads'])->name('thread.show');
+Route::get('/forum/thread/create', [ThreadController::class, 'createThread'])->name('thread.create');
 Route::get('forum/thread/{thread}/comments', [ThreadController::class, 'getThreadComments'])->name('thread.comments');
-Route::get('forum/thread/{thread}', [ThreadController::class, 'viewThread'])->name('thread.view');
 Route::get('forum/thread/{thread}/edit', [ThreadController::class, 'editThread'])->name('thread.edit');
+Route::get('forum/thread/{thread}', [ThreadController::class, 'viewThread'])->name('thread.view');
+Route::get('forum/threads', [ThreadController::class, 'showThreads'])->name('thread.show');
 
 Route::get('thread/tags', [ThreadController::class, 'getThreadTagsList'])->name('thread.tags');
 Route::post('updateRating/{type}/{model}', [RatingController::class, 'createOrUpdate'])->name('rating.createOrUpdate');
@@ -41,16 +41,30 @@ Route::get('payment', [SellerController::class, 'save'])->name('save.express');
 Route::middleware('auth')->group(function () {
     Route::middleware('hasSellerPaymentAccount')->group(function () {
         Route::get('/auction/create', [AuctionController::class, 'create'])->name('auction.create');
-        Route::post('/auction', [AuctionController::class, 'store'])->name('auction.store');
         Route::get('/payment/login', [SellerController::class, 'login'])->name('stripe.login');
+        Route::post('/auction', [AuctionController::class, 'store'])->name('auction.store');
     });
 
     Route::middleware('hasCustomerPaymentAccount')->group(function () {
         Route::post('/auction/{auction}', [AuctionController::class, 'bid'])->name('auction.bid');
     });
 
-    Route::get('/dashboard', [DashboardController::class, 'view'])->name('dashboard');
+    Route::group(['prefix' => 'payment'], function () {
+        Route::get('/express/login', [SellerController::class, 'login'])->name('login.express');
+        Route::get('/express', [SellerController::class, 'create'])->name('create.express');
+        Route::get('/{auction}/success', [StripeController::class, 'success'])->name('payment.success');
+
+        Route::get('/card', [CustomerController::class, 'form'])->name('stripe.form');
+        Route::post('/card', [CustomerController::class, 'save'])->name('save.customer');
+
+        Route::get('/{auction}', [StripeController::class, 'index'])->name('payment.index');
+        Route::post('/{auction}', [StripeController::class, 'checkout'])->name('payment.checkout');
+
+
+    });
+
     Route::post('dashboard/search', [DashboardController::class, 'search'])->name('dashboard.search');
+    Route::get('/dashboard', [DashboardController::class, 'view'])->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -61,22 +75,18 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/upload/images', [AuctionImageController::class, 'store'])->name('auction.images.store');
 
-    Route::get('/payment/{auction}/success', [StripeController::class, 'success'])->name('payment.success');
-    Route::post('/payment/{auction}', [StripeController::class, 'checkout'])->name('payment.checkout');
-    Route::get('/payment/{auction}', [StripeController::class, 'index'])->name('payment.index');
-    Route::post('card/save', [CustomerController::class, 'save'])->name('save.customer');
-    Route::get('card', [CustomerController::class, 'form'])->name('stripe.form');
-    Route::get('payment/express', [SellerController::class, 'create'])->name('create.express');
-    Route::get('payment/express/login', [SellerController::class, 'login'])->name('login.express');
+    Route::delete('auction/{auction}/images/{image}/delete', [AuctionImageController::class, 'destroy'])->name('auction.images.delete');
     Route::get('auction/{auction}/edit/form', [AuctionController::class, 'edit'])->name('auction.edit.form');
     Route::post('auction/{auction}/update', [AuctionController::class, 'update'])->name('auction.update');
-    Route::delete('auction/{auction}/images/{image}/delete', [AuctionImageController::class, 'destroy'])->name('auction.images.delete');
+
 });
 
+Route::group(['prefix' => '/auction/'], function () {
+    Route::get('limited', [AuctionController::class, 'getLimitedAuctions'])->name('auctions.limited');
+    Route::get('{auction}/watchers', [AuctionController::class, 'getUsersWatching'])->name('auction.watchers');
+    Route::get('{auction}/latest_bid', [AuctionController::class, 'latestBid'])->name('auction.latestBid');
+    Route::get('{auction}/recent-bids', [AuctionController::class, 'getRecentBidsForAuction'])->name('auction.recentBids');
+    Route::get('{auction}', [AuctionController::class, 'view'])->name('auction.view')->middleware(UpdateUserActivity::class);
+});
 
-Route::get('/auction/{auction}/watchers', [AuctionController::class, 'getUsersWatching'])->name('auction.watchers');
-Route::get('/auction/{auction}/latest_bid', [AuctionController::class, 'latestBid'])->name('auction.latestBid');
-Route::get('/auction/limited', [AuctionController::class, 'getLimitedAuctions'])->name('auctions.limited');
-Route::get('/auction/{auction}/recent-bids', [AuctionController::class, 'getRecentBidsForAuction'])->name('auction.recentBids');
-Route::get('/auction/{auction}', [AuctionController::class, 'view'])->name('auction.view')->middleware(UpdateUserActivity::class);
 require __DIR__ . '/auth.php';

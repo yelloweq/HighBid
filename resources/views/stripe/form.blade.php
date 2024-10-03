@@ -29,7 +29,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         console.log('Document is ready');
-        var stripe = Stripe('{{ env('STRIPE_PK') }}');
+        var stripe = Stripe('{{ env('STRIPE_PRIVATE_KEY') }}');
         console.log('Stripe initialized:', stripe);
         var elements = stripe.elements();
         var styleOptions = {

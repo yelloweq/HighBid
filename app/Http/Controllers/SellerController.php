@@ -9,16 +9,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Mauricius\LaravelHtmx\Http\HtmxResponseClientRedirect;
-use Stripe\Account;
-use Stripe\Stripe;
 use Stripe\StripeClient;
 
 class SellerController extends Controller
 {
     public function create(): HtmxResponseClientRedirect
     {
+        dd("IM HERE");
         $stripe = new StripeClient(config('stripe.sk'));
 
+        dd($stripe);
         $user = User::find(Auth::id());
         if (!is_null($user->stripe_account_id)) {
             return new HtmxResponseClientRedirect(route('payment.login'));

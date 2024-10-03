@@ -15,7 +15,7 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 @endauth
-                <x-nav-link :href="route('auctions')" :active="request()->routeIs('auctions')" hx-boost="false">
+                <x-nav-link :href="route('auctions')" :active="request()->routeIs('auctions')">
                     {{ __('Auctions') }}
                 </x-nav-link>
                 @auth
@@ -23,13 +23,13 @@
                         {{ __('Messages') }}
                     </x-nav-link>
                 @endauth
-                <x-nav-link :href="route('forum')" :active="request()->routeIs('forum')" hx-boost="false">
+                <x-nav-link :href="route('forum')" :active="request()->routeIs('forum')">
                     {{ __('Forum') }}
                 </x-nav-link>
-                <x-nav-link :href="route('about')" :active="request()->routeIs('about')" hx-boost="false">
+                <x-nav-link :href="route('about')" :active="request()->routeIs('about')">
                     {{ __('About') }}
                 </x-nav-link>
-                <x-nav-link :href="route('faq')" :active="request()->routeIs('faq')" hx-boost="false">
+                <x-nav-link :href="route('faq')" :active="request()->routeIs('faq')">
                     {{ __('FAQ') }}
                 </x-nav-link>
             </div>
@@ -38,7 +38,7 @@
             @auth
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <div class="sm:-my-px sm:ms-10 sm:flex sm:me-4">
-                        <x-nav-link-button :href="route('auction.create')" :active="request()->routeIs('auction.create')" hx-boost="false">
+                        <x-nav-link-button :href="route('auction.create')" :active="request()->routeIs('auction.create')">
                             {{ __('Create Auction') }}
                         </x-nav-link-button>
                     </div>
