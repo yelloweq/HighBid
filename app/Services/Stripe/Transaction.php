@@ -13,11 +13,11 @@ use Stripe\Transfer;
 
 class Transaction
 {
-    public static function create(User $user, Auction $auction)
+    public static function create(User $user, Auction $auction): void
     {
         $amount = $auction->getCurrentHighestBid()?->current_amount ?? $auction->price;
 
-        $payout = (int) $amount * 0.95;
+        $payout = (int) $amount * config('payment.payment-processor.'.config('payment.payment-processor.default').'.');
 
         Stripe::setApiKey(env('STRIPE_SK'));
 

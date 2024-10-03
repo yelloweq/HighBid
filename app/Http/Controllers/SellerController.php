@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Services\Stripe\Seller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -14,27 +15,23 @@ use Stripe\StripeClient;
 
 class SellerController extends Controller
 {
-    public function create()
+    public function create(): HtmxResponseClientRedirect
     {
         $stripe = new StripeClient(config('stripe.sk'));
 
         $user = User::find(Auth::id());
         if (!is_null($user->stripe_account_id)) {
-            return new HtmxResponseClientRedirect(route('stripe.login'));
+            return new HtmxResponseClientRedirect(route('payment.login'));
         }
-        // $session = \request()->session()->getId();
-        // $url = config('services.stripe.connect') . $session;
-        // // dd($url);
-        // return redirect($url);
 
         $connect_account = $stripe->accounts->create(['type' => 'express']);
         $user->update(['stripe_account_id' => $connect_account->id]);
         $user->save();
 
-        return redirect(route('login.express'));
+        return new HtmxResponseClientRedirect(route('login.express'));
     }
 
-    public function save(Request $request)
+    public function save(Request $request): HtmxResponseClientRedirect
     {
         $this->validate($request, [
             'code' => 'required',
@@ -55,7 +52,7 @@ class SellerController extends Controller
         return new HtmxResponseClientRedirect(route('auctions'));
     }
 
-    public function login()
+    public function login(): RedirectResponse
     {
         $user = Auth::user();
         $stripe = new StripeClient(config('stripe.sk'));

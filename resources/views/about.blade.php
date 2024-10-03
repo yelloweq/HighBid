@@ -9,25 +9,10 @@
                 dedicated to providing a seamless and secure auction experience that connects buyers and sellers
                 from around the globe. Our platform combines cutting-edge technology with intuitive features to make
                 buying and selling a breeze.</p>
-            <div class="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0">
-                <a href="#"
-                    class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900">
-                    Get started
-                    <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                        fill="none" viewBox="0 0 14 10">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M1 5h12m0 0L9 1m4 4L9 9" />
-                    </svg>
-                </a>
-                <a href="#"
-                    class="inline-flex justify-center hover:text-gray-900 items-center py-3 px-5 sm:ms-4 text-base font-medium text-center text-white rounded-lg border border-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-400">
-                    Learn more
-                </a>
-            </div>
         </div>
     </section>
 
-    <section class="text-white max-w-11xl mx-auto">
+    <section class="text-white max-w-11xl mx-auto min-h-80">
         <div class="text-center py-16">
             <h1 class="text-4xl md:text-5xl lg:text-6xl text-transparent bg-clip-text font-inter font-semibold bg-gradient-to-r from-blue-accent via-blue-400 to-indigo-700 p-4">Our Mission</h1>
             <p class="text-lg">
@@ -36,13 +21,11 @@
                 exactly what they're looking for, whether it's a rare collectible, a vintage treasure, or everyday
                 essentials.
             </p>
-
-
         </div>
 
     </section>
 
-    <section class="text-white max-w-7xl mx-auto pb-24 text-center">
+    <section class="text-white max-w-7xl mx-auto pb-24 text-center min-h-80">
         <h1 class="text-4xl md:text-5xl lg:text-6xl text-transparent bg-clip-text font-inter font-semibold bg-gradient-to-r from-blue-accent via-blue-400 to-indigo-700 p-4">Key Features</h1>
         <h2 class="text-xl md:text-2xl lg:text-2xl mt-4">Instant Chat</h2>
         <p class="text-lg mt-2">
@@ -86,7 +69,7 @@
 
 
 
-    <section class="text-white max-w-11xl mx-auto py-24 text-center bg-blue-secondary mb-24 rounded-md">
+    <section class="text-white max-w-11xl mx-auto py-24 text-center bg-blue-secondary mb-24 rounded-md min-h-80">
         <div class="grid grid-cols-3 grid-rows-1">
             <div>
                 <a href="#"

@@ -2,8 +2,6 @@
     @php
         //temporary rating
         $rating = 0;
-        $isAuthenticated = Auth::check();
-        $currentDate = \Carbon\Carbon::now();
     @endphp
 
     @push('styles')
@@ -86,7 +84,7 @@
                             @for ($index = 0; $index < $auction->images->count(); $index++)
                                 <div class="zoom-container mr-4 my-2 bg-gray-900">
                                     <img alt="Product image" class="object-contain w-96 h-96 mx-auto"
-                                        src="{{ asset('storage/' . $auction->images->get($index)->path) }}" />
+                                         src="{{ asset('storage/' . $auction->images->get($index)->path) }}"/>
 
                                 </div>
                                 @if ($auction->images->get($index)->flagged)
@@ -96,10 +94,10 @@
                                 @endif
                             @endfor
                         @else
-                            @for ($index = 0; $index < 3; $index++)
+                            @for ($index = 0; $index < $auction->images->count(); $index++)
                                 <div class="zoom-container mr-4 my-2">
                                     <img alt="Product image" class="object-contain w-96 h-96 mx-auto"
-                                        src="{{ asset('storage/' . $auction->images->get($index)->path) }}" />
+                                         src="{{ asset('storage/' . $auction->images->get($index)->path) }}"/>
                                 </div>
                                 @if ($auction->images->get($index)->flagged)
                                     <p
@@ -107,37 +105,19 @@
                                         Image contains sensitive material</p>
                                 @endif
                             @endfor
-                            <div class="relative mr-4 my-2">
-                                <img alt="Product image"
-                                    class="w-full"src="{{ asset('storage/' . $auction->images->get($index)->path) }}" />
-                                @if ($auction->images()->count() > 4)
-                                    <span
-                                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-800 px-6 py-4 bg-opacity-80">{{ $auction->images()->count() - 4 }}+</span>
-                                @endif
-                                @if ($auction->images->get($index)->flagged)
-                                    <p
-                                        class="text-white absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 bg-red-500 p-4">
-                                        Image contains sensitive material</p>
-                                @endif
-                            </div>
                         @endif
-
-
                     </div>
 
-                    <div class="flex -mx-2">
-
-                    </div>
                 </div>
                 <!-- Content -->
                 <div class="md:w-1/2 grid grid-cols-2">
-                    @if (Auth::user()->id === $auction->seller->id)
+                    @if (Auth::user() && Auth::user()->id === $auction->seller->id)
                         <div class="text-3xl font-semibold flex flex-col col-span-2 mb-8">
                             <div class="flex justify-between items-center">
                                 {{ $auction->title }}
                                 <div hx-get="{{ route('auction.edit.form', $auction) }}" hx-swap="outerHTML"
-                                    hx-target="body" hx-trigger="click"><i class="fa-solid fa-pen-to-square "
-                                        style="color: #ffffff;"></i></div>
+                                     hx-target="body" hx-trigger="click"><i class="fa-solid fa-pen-to-square "
+                                                                            style="color: #ffffff;"></i></div>
                             </div>
 
                             @if (empty(json_decode($auction->images->first()?->metadata, true)))
@@ -151,7 +131,7 @@
 
                             {{ $auction->title }}
 
-                            @if ($auction->images->count() > 0 || true)
+                            @if ($auction->images->count() > 0 && $auction->images->contains('flagged', true))
                                 <div class="text-lg font-normal  text-red-400">
                                     Warning: This auction contains unverified images
                                 </div>
@@ -193,7 +173,7 @@
                         <div class="flex items-center mb-4">
                             <span class="text-2xl font-semibold">
                                 <div hx-get={{ route('auction.latestBid', $auction) }} hx-swap="innerHTML"
-                                    hx-trigger="load, every 15s">
+                                     hx-trigger="load, every 15s">
                                 </div>
                             </span>
                         </div>
@@ -201,21 +181,22 @@
                         @if ($auction->seller->id == auth()->id() || $auction->winner?->id == auth()->id())
                             <div class="mb-4">
                                 <ul>
-                                    <li>This auction is currently:<div
+                                    <li>This auction is currently:
+                                        <div
                                             class="inline-block ml-2 text-green-400 animate-bounce">
                                             {{ $auction->status }}
                                             <div>
-                                    <li>
+                                                <li>
                                 </ul>
                             </div>
                         @endif
                         @if ($auction->winner_id == auth()->id() && auth()->check())
                             <div class="flex items-center mb-4">
                                 <form action="{{ route('payment.checkout', $auction) }}" method="POST"
-                                    hx-boost="false">
+                                      hx-boost="false">
                                     @csrf
                                     <button @if ($auction->status === 'Closed' && $auction->winner->id) disabled @endif
-                                        class="px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60 w-full">
+                                    class="px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60 w-full">
                                         @if ($auction->status === 'Closed')
                                             PAID
                                         @else
@@ -227,31 +208,36 @@
                         @else
                             <div class="flex items-center mb-4">
                                 <form hx-post="{{ route('auction.bid', $auction) }}" hx-target="#messages"
-                                    hx-swap="innterHTML" hx-boost="false" class="w-full" id="bid-form">
+                                      hx-swap="innterHTML" hx-boost="false" class="w-full" id="bid-form">
                                     @csrf
 
                                     <div class="flex align-middle items-center justify-between mb-4">
                                         <input class="text-black disabled:opacity-80" type="text" name="bid"
-                                            placeholder="£" autocomplete="false" required pattern="^\d+(\.\d{1,2})?$"
-                                            id="bid" @if ($auction->end_time->lte($currentDate)) disabled @endif />
+                                               placeholder="£" autocomplete="false" required pattern="^\d+(\.\d{1,2})?$"
+                                               id="bid"
+                                               @if ($auction->end_time->lte(Carbon\Carbon::now())) disabled @endif
+                                        />
+
                                         <label class="flex items-center cursor-pointer">
                                             <input type="checkbox" name="auto_bid" id="auto_bid" class="mr-2"
-                                                value="1" onchange="toggleAutoBidLabel(this)">
+                                                   value="1" onchange="toggleAutoBidLabel(this)">
                                             <span id="auto_bid_label" class="w-28">Autobid: OFF</span>
                                         </label>
                                     </div>
                                     <button
                                         class="px-6 py-3 border bg-blue-accent border-black text-sm disabled:bg-opacity-60 w-full"
-                                        @if (!auth()->check() || $auction->end_time->lte($currentDate)) disabled @endif>
-                                        PLACE BID
+                                        @if (!Auth::check() || $auction->end_time->lte(Carbon\Carbon::now())) disabled @endif>
+                                        @if (Auth::check())
+                                            PLACE BID
+                                        @else
+                                            Login to bid
+                                        @endif
                                     </button>
                                 </form>
                             </div>
                         @endif
 
-                        <div id="messages" class="w-full min-h-14 mb-2">
-
-                        </div>
+                        <div id="messages" class="w-full min-h-14 mb-2"></div>
 
                         @if ($auction->seller->id != auth()->id())
                             <p class="text-blue-400 hover:underline cursor-pointer">
@@ -270,17 +256,14 @@
                     </div>
                     <div class="bid-history">
                         <div id="watchersCount" hx-get="{{ route('auction.watchers', ['auction' => $auction]) }}"
-                            hx-trigger="load, every 10s"></div>
+                             hx-trigger="load, every 10s"></div>
 
                         <h4 class=" text-lg text-center mt-4">Recent bids</h4>
                         <div hx-get="{{ route('auction.recentBids', $auction) }}"
-                            hx-trigger="load, every 10s, from:closest(#bid-form)" hx-target="this"
-                            class="relative flex flex-col w-full h-full overflow-scroll text-white bg-blue-primary shadow-md bg-clip-border rounded-xl m-4">
+                             hx-trigger="load, every 10s, from:closest(#bid-form)" hx-target="this"
+                             class="relative flex flex-col w-full h-full overflow-scroll text-white bg-blue-primary shadow-md bg-clip-border rounded-xl m-4">
                         </div>
-
                     </div>
-
-
                 </div>
             </div>
         </div>
@@ -290,8 +273,8 @@
 
 <script>
     function toggleAutoBidLabel(checkbox) {
-        var label = document.getElementById('auto_bid_label');
-        var bid = document.getElementById('bid');
+        const label = document.getElementById('auto_bid_label');
+        const bid = document.getElementById('bid');
         if (checkbox.checked) {
             label.innerHTML = 'Autobid: ON';
             bid.placeholder = "£ (MAX BID)";
@@ -301,13 +284,13 @@
         }
     }
 
-    document.addEventListener('htmx:afterSwap', function(event) {
+    document.addEventListener('htmx:afterSwap', function (event) {
         if (!event.detail.target.matches('.top-bid')) return;
 
         const newBidAmount = event.detail.target.getAttribute('data-bid-amount');
         const lastBidAmount = sessionStorage.getItem('lastBidAmount');
 
-        if (newBidId !== lastBidId) {
+        if (newBidAmount !== lastBidAmount) {
             event.detail.target.classList.add('new-bid');
             sessionStorage.setItem('lastBidAmount', newBidAmount);
         }

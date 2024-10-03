@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Mauricius\LaravelHtmx\Http\HtmxResponseClientRedirect;
 use Symfony\Component\HttpFoundation\Response;
 
-class HasSellerStripeAccount
+class HasCustomerPaymentAccount
 {
     /**
      * Handle an incoming request.
@@ -18,8 +18,8 @@ class HasSellerStripeAccount
     public function handle(Request $request, Closure $next): Response
     {
         $user = Auth::user();
-        if (is_null($user->stripe_account_id)) {
-            return redirect()->route('create.express');
+        if (is_null($user->stripe_customer_id)) {
+            return new HtmxResponseClientRedirect(route('stripe.form'));
         }
         return $next($request);
     }

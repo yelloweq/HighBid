@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AuctionImage extends Model
 {
@@ -29,7 +30,7 @@ class AuctionImage extends Model
         'flagged' => 'boolean',
     ];
 
-    public function auction()
+    public function auction(): BelongsTo
     {
         return $this->belongsTo(Auction::class);
     }
@@ -41,6 +42,6 @@ class AuctionImage extends Model
 
     public function getMismatchReason()
     {
-        return $this->whereNotNull('metadata_mismatch_reason')->first()?->metadata_mismatch_reason;
+        return $this->whereNotNull('metadata_mismatch_reason')->first()->metadata_mismatch_reason;
     }
 }

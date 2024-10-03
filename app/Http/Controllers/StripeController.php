@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session as FacadesSession;
+use Illuminate\Validation\ValidationException;
 use Mauricius\LaravelHtmx\Http\HtmxResponseClientRedirect;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
@@ -21,25 +22,28 @@ use function PHPUnit\Framework\isNull;
 
 class StripeController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         return view('payment');
     }
 
-    public function createStripeAccount()
+    public function createStripeAccount(): HtmxResponseClientRedirect
     {
         $stripe = new StripeClient(config('stripe.sk'));
 
         $user = Auth::user();
         if (!is_null($user->stripe_connect_id)) {
-            return new HtmxResponseClientRedirect(route('stripe.login'));
+            return new HtmxResponseClientRedirect(route('payment.login'));
         }
         $session = \request()->session()->getId();
         $url = config('services.stripe.connect') . $session;
         return new HtmxResponseClientRedirect($url);
     }
 
-    public function save(Request $request)
+    /**
+     * @throws ValidationException
+     */
+    public function save(Request $request): HtmxResponseClientRedirect
     {
         $this->validate($request, [
             'code' => 'required',
@@ -61,7 +65,7 @@ class StripeController extends Controller
     }
 
 
-    public function createStripeAccountLink($stripeAccountId)
+    public function createStripeAccountLink($stripeAccountId): void
     {
         $stripe = new StripeClient(config('stripe.sk'));
         try {
@@ -76,19 +80,26 @@ class StripeController extends Controller
         }
     }
 
-    public function checkout(Auction $auction)
+    public function checkout(Auction $auction): HtmxResponseClientRedirect
     {
         Stripe::setApiKey(config('stripe.sk'));
 
         $bid = $auction->getCurrentHighestBid();
 
         if (!$bid) {
-            return redirect()->back()->with('error', 'No bids on this auction');
+            return new HtmxResponseClientRedirect(back()->getTargetUrl())->with('error', 'No bids on this auction');
+                //redirect()->back()->with('error', 'No bids on this auction');
         }
+
         $user = $auction->winner()->first();
+        if (!$user) {
+            Log::error("[AUCTION ID: {{$auction->id}}] Auction winner is null!");
+            return new HtmxResponseClientRedirect(route('payment.success', $auction));
+        }
+
         Transaction::create($user, $auction);
 
-        return redirect()->away((route('payment.success', $auction)));
+        return new HtmxResponseClientRedirect(route('payment.success', $auction));
     }
 
     public function success(Auction $auction): View

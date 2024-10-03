@@ -16,16 +16,6 @@ use App\Http\Controllers\StripeController;
 use App\Http\Controllers\ThreadController;
 use App\Http\Middleware\UpdateUserActivity;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
 Route::post('/auction/search', [AuctionController::class, 'search'])->name('auction.search');
 
@@ -46,18 +36,19 @@ Route::get('forum/thread/{thread}/edit', [ThreadController::class, 'editThread']
 Route::get('thread/tags', [ThreadController::class, 'getThreadTagsList'])->name('thread.tags');
 Route::post('updateRating/{type}/{model}', [RatingController::class, 'createOrUpdate'])->name('rating.createOrUpdate');
 
-Route::get('stripe', [SellerController::class, 'save'])->name('save.express');
+Route::get('payment', [SellerController::class, 'save'])->name('save.express');
 
 Route::middleware('auth')->group(function () {
-    Route::middleware('hasStripeSeller')->group(function () {
+    Route::middleware('hasSellerPaymentAccount')->group(function () {
         Route::get('/auction/create', [AuctionController::class, 'create'])->name('auction.create');
         Route::post('/auction', [AuctionController::class, 'store'])->name('auction.store');
-        Route::get('/stripe/login', [SellerController::class, 'login'])->name('stripe.login');
+        Route::get('/payment/login', [SellerController::class, 'login'])->name('stripe.login');
     });
 
-    Route::middleware('hasStripeCustomer')->group(function () {
+    Route::middleware('hasCustomerPaymentAccount')->group(function () {
         Route::post('/auction/{auction}', [AuctionController::class, 'bid'])->name('auction.bid');
     });
+
     Route::get('/dashboard', [DashboardController::class, 'view'])->name('dashboard');
     Route::post('dashboard/search', [DashboardController::class, 'search'])->name('dashboard.search');
 
@@ -75,8 +66,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/payment/{auction}', [StripeController::class, 'index'])->name('payment.index');
     Route::post('card/save', [CustomerController::class, 'save'])->name('save.customer');
     Route::get('card', [CustomerController::class, 'form'])->name('stripe.form');
-    Route::get('stripe/express', [SellerController::class, 'create'])->name('create.express');
-    Route::get('stripe/express/login', [SellerController::class, 'login'])->name('login.express');
+    Route::get('payment/express', [SellerController::class, 'create'])->name('create.express');
+    Route::get('payment/express/login', [SellerController::class, 'login'])->name('login.express');
     Route::get('auction/{auction}/edit/form', [AuctionController::class, 'edit'])->name('auction.edit.form');
     Route::post('auction/{auction}/update', [AuctionController::class, 'update'])->name('auction.update');
     Route::delete('auction/{auction}/images/{image}/delete', [AuctionImageController::class, 'destroy'])->name('auction.images.delete');

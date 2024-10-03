@@ -74,9 +74,11 @@ class AuctionController extends Controller
      */
     public function create(Request $request): View|HtmxResponseClientRedirect
     {
+        dd("auction create form");
         if (!Auth::check()) {
             return new HtmxResponseClientRedirect(route('login'));
         }
+
 
         $deliveryTypes = DeliveryType::cases();
         $auctionTypes = AuctionType::cases();
@@ -93,10 +95,9 @@ class AuctionController extends Controller
     /**
      * Store the auction form data.
      */
-    public function store(CreateAuctionRequest $request): Response
+    public function store(CreateAuctionRequest $request): HtmxResponseClientRedirect
     {
         try {
-            // dd(Carbon::createFromDate($request->input('end_date')));
             $auction = Auction::create([
                 'title' => $request->input('title'),
                 'description' => $request->input('description'),
@@ -120,12 +121,12 @@ class AuctionController extends Controller
 
             return new HtmxResponseClientRedirect(route('auction.view', ['auction' => $auction->id]));
         } catch (\Exception $e) {
-            dd('error', $e->getMessage());
-            return new HtmxResponseClientRefresh();
+            //TODO: Redirect with errors
+            return new HtmxResponseClientRedirect(route('home'));
         }
     }
 
-    public function edit(Request $request, Auction $auction)
+    public function edit(Request $request, Auction $auction): View
     {
         $auctionTypes = AuctionType::cases();
         $deliveryTypes = DeliveryType::cases();

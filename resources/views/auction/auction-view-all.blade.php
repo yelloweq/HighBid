@@ -5,7 +5,7 @@
                 <x-sidebar :categories="$categories" :deliveryTypes="$deliveryTypes"/>
             </div>
             <div class="w-full">
-                <x-auction-grid :auctions=$auctions/>
+                <x-auction-grid :auctions="$auctions"/>
             </div>
         </div>
     </div>
@@ -15,21 +15,18 @@
 <script>
 document.body.addEventListener('htmx:afterSwap', function(event) {
     if (event.target.hasAttribute('hx-auction-grid')) {
-        var grid = document.getElementById('auction-grid');
-        var currentPage = parseInt(grid.getAttribute('data-page')) || 1;
-        currentPage++;  // Increment the current page
-        grid.setAttribute('data-page', currentPage);  // Update the data-page attribute
-        
-        // Update the hx-post attribute for the next potential load
+        let grid = document.getElementById('auction-grid');
+        let currentPage = parseInt(grid.getAttribute('data-page')) || 1;
+        currentPage++;
+        grid.setAttribute('data-page', currentPage);
         grid.setAttribute('hx-post', `{{ route('auction.search') }}?page=${currentPage}`);
     }
 });
 
 document.querySelector('#sidebar-form').addEventListener('change', function() {
-    // Reset page number on any form change
-    var grid = document.getElementById('auction-grid');
+    let grid = document.getElementById('auction-grid');
     grid.setAttribute('data-page', '1');
     grid.setAttribute('hx-post', `{{ route('auction.search') }}?page=1`);
 });
-<script>
+</script>
 @endpush
