@@ -18,15 +18,15 @@ class UpdateUserActivity
     {
         $response = $next($request);
 
-        if (auth()->check() && $request->route()->getName() == 'auction.view') {
-            $userId = auth()->id();
+        if ($request->route()->getName() == 'auction.view') {
+            $userId = $request->user()->id;
             $auctionId = $request->route('auction')->id;
 
             $watcher = Watcher::where('user_id', $userId)
                 ->where('auction_id', $auctionId)
                 ->first();
 
-            if (!$watcher) {
+            if (is_null($watcher)) {
                 Watcher::create([
                     'user_id' => $userId,
                     'auction_id' => $auctionId,

@@ -5,12 +5,13 @@ namespace Database\Factories;
 use App\Enums\AuctionStatus;
 use App\Enums\AuctionType;
 use App\Enums\DeliveryType;
+use App\Models\Auction;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Auction>
+ * @extends Factory<Auction>
  */
 class AuctionFactory extends Factory
 {
@@ -26,7 +27,7 @@ class AuctionFactory extends Factory
             'description' => fake()->sentence(),
             'features' => fake()->words(5, true),
             'type' => fake()->randomElement(AuctionType::cases()),
-            'price' => fake()->randomNumber(5, false),
+            'price' => fake()->randomNumber(6, false),
             'delivery_type' => fake()->randomElement(DeliveryType::cases()),
             'category_id' => Category::factory(),
             'winner_id' => null,

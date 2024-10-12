@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Akaunting\Money\Money;
 use App\Jobs\MatchUploadedImagesToAuction;
 use App\Jobs\ProcessImageWithRekognition;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -74,7 +75,6 @@ class AuctionController extends Controller
      */
     public function create(Request $request): View|HtmxResponseClientRedirect
     {
-        dd("auction create form");
         if (!Auth::check()) {
             return new HtmxResponseClientRedirect(route('login'));
         }
@@ -120,7 +120,7 @@ class AuctionController extends Controller
             }
 
             return new HtmxResponseClientRedirect(route('auction.view', ['auction' => $auction->id]));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             //TODO: Redirect with errors
             return new HtmxResponseClientRedirect(route('home'));
         }

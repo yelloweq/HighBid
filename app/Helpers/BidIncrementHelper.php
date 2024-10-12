@@ -4,11 +4,6 @@ namespace App\Helpers;
 
 class BidIncrementHelper
 {
-    /**
-     * Define the bid increment ranges.
-     *
-     * @return array
-     */
     protected static function getIncrementRanges()
     {
         return [
@@ -25,15 +20,8 @@ class BidIncrementHelper
         ];
     }
 
-    /**
-     * Get the bid increment based on the highest current bid.
-     *
-     * @param string $highestBidStr The highest current bid in pence as a string.
-     * @return int Increment in pence.
-     */
-    public static function getBidIncrement($highestBidStr)
+    public static function getBidIncrement($highestBid)
     {
-        $highestBid = (int) $highestBidStr;  // Convert the string to an integer
         $ranges = self::getIncrementRanges();
 
         foreach ($ranges as $limit => $increment) {
@@ -42,6 +30,6 @@ class BidIncrementHelper
             }
         }
 
-        return end($ranges); // Return the last increment value if the bid is above the highest limit
+        return end($ranges);
     }
 }

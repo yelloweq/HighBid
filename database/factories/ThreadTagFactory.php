@@ -4,10 +4,11 @@ namespace Database\Factories;
 
 use App\Models\Tag;
 use App\Models\Thread;
+use App\Models\ThreadTag;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ThreadTag>
+ * @extends Factory<ThreadTag>
  */
 class ThreadTagFactory extends Factory
 {

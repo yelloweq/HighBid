@@ -6,6 +6,8 @@ use App\Enums\AuctionType;
 use App\Enums\DeliveryType;
 use App\Helpers\BidIncrementHelper;
 use App\Http\Controllers\AuctionController;
+use App\Jobs\IncrementBidsForAuction;
+use Mauricius\LaravelHtmx\Http\HtmxResponseClientRedirect;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -35,7 +37,7 @@ class AuctionControllerTest extends TestCase
 
         $response = $controller->create(new Request());
 
-        $this->assertInstanceOf(\Mauricius\LaravelHtmx\Http\HtmxResponseClientRedirect::class, $response);
+        $this->assertInstanceOf(HtmxResponseClientRedirect::class, $response);
         $this->assertEquals(route('login'), $response->headers->get('HX-Redirect'));
     }
 
@@ -92,6 +94,6 @@ class AuctionControllerTest extends TestCase
             'user_id' => $otherUser->id,
             'amount' => 12000 // in pence
         ]);
-        Queue::assertPushed(\App\Jobs\IncrementBidsForAuction::class, 1);
+        Queue::assertPushed(IncrementBidsForAuction::class, 1);
     }
 }

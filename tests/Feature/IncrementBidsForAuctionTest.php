@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Helpers\BidIncrementHelper;
+use App\Jobs\IncrementBidsForAuction;
 use App\Models\Auction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -46,7 +47,7 @@ class IncrementBidsForAuctionTest extends TestCase
             'amount' => 15000,
         ]);
 
-        $job = new \App\Jobs\IncrementBidsForAuction($auction);
+        $job = new IncrementBidsForAuction($auction);
         $job->handle();
 
         $this->assertDatabaseHas('bids', [

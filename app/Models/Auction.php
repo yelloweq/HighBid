@@ -82,6 +82,7 @@ class Auction extends Model
         return $this->belongsTo(Category::class);
     }
 
+    //TODO: remove if not used
     public function timeRemaining(): string
     {
         if ($this->end_time->greaterThan(Carbon::now())) {

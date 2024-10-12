@@ -1,8 +1,11 @@
-<ul class="w-full" hx-auction-grid
-    hx-disinherit="*"
-    @if ($auctions->hasMorePages()) hx-post={{ route('auction.search', ['page' => $auctions->currentPage() + 1]) }} hx-trigger="intersect
-    once settle:0" hx-swap="afterend"
-hx-include="#sidebar-form"> @endif
+<ul class="w-full" hx-auction-grid hx-disinherit="*"
+    @if ($auctions->hasMorePages())
+        hx-post={{ route('auction.search', ['page' => $auctions->currentPage() + 1]) }}
+        hx-trigger="intersect"
+        hx-swap="afterend"
+        hx-include="#sidebar-form">
+   @endif
+
 @foreach ($auctions as $auction)
     <li>
         <x-auction-card :auction="$auction"/>

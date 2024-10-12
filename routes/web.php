@@ -49,18 +49,19 @@ Route::middleware('auth')->group(function () {
         Route::post('/auction/{auction}', [AuctionController::class, 'bid'])->name('auction.bid');
     });
 
+    Route::get('payments/seller/account/create', [SellerController::class, 'createConnectAccount'])->name('payments.createConnectAccount');
+    Route::post('payments/seller/account-link/create', [SellerController::class, 'createAccountLink'])->name('payments.createAccountLink');
+
     Route::group(['prefix' => 'payment'], function () {
-        Route::get('/express/login', [SellerController::class, 'login'])->name('login.express');
-        Route::get('/express', [SellerController::class, 'create'])->name('create.express');
-        Route::get('/{auction}/success', [StripeController::class, 'success'])->name('payment.success');
-
-        Route::get('/card', [CustomerController::class, 'form'])->name('stripe.form');
-        Route::post('/card', [CustomerController::class, 'save'])->name('save.customer');
-
-        Route::get('/{auction}', [StripeController::class, 'index'])->name('payment.index');
-        Route::post('/{auction}', [StripeController::class, 'checkout'])->name('payment.checkout');
-
-
+//        Route::get('/express/login', [SellerController::class, 'login'])->name('login.express');
+//        Route::get('/express', [SellerController::class, 'create'])->name('create.express');
+//        Route::get('/{auction}/success', [StripeController::class, 'success'])->name('payment.success');
+//
+//        Route::get('/card', [CustomerController::class, 'form'])->name('stripe.form');
+//        Route::post('/card', [CustomerController::class, 'save'])->name('save.customer');
+//
+//        Route::get('/{auction}', [StripeController::class, 'index'])->name('payment.index');
+//        Route::post('/{auction}', [StripeController::class, 'checkout'])->name('payment.checkout');
     });
 
     Route::post('dashboard/search', [DashboardController::class, 'search'])->name('dashboard.search');

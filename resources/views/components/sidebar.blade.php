@@ -128,12 +128,14 @@
 
 @push('scripts')
 <script>
-    let val = document.getElementById("sidebar-form");
-    val.onkeypress = function (key) {
-        let btn = 0 || key.keyCode || key.charCode;
-        if (btn === 13) {
-            key.preventDefault();
+    document.addEventListener('DOMContentLoaded', function (event) {
+        let sidebarForm = document.getElementById("sidebar-form");
+        sidebarForm.onkeypress = function (key) {
+            let btn = 0 || key.keyCode || key.charCode;
+            if (btn === 13) {
+                key.preventDefault();
+            }
         }
-    }
+    });
 </script>
 @endpush

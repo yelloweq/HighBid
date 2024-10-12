@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Mauricius\LaravelHtmx\Http\HtmxResponse;
 
 class HtmxController extends Controller
 {
-    public function remove()
+    public function remove(): HtmxResponse
     {
-        return response('', 200);
+        return new HtmxResponse('');
     }
 }

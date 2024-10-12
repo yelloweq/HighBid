@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use App\Models\Auction;
+use App\Models\Bid;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Bid>
+ * @extends Factory<Bid>
  */
 class BidFactory extends Factory
 {
@@ -18,8 +19,8 @@ class BidFactory extends Factory
      */
     public function definition(): array
     {
-        $bid_amount = fake()->randomNumber(5, false);
-        
+        $bid_amount = fake()->randomNumber(6, false);
+
         return [
             'auction_id' => Auction::all()->random()->id,
             'user_id' => User::all()->random()->id,

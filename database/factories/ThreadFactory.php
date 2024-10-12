@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Thread;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Thread>
+ * @extends Factory<Thread>
  */
 class ThreadFactory extends Factory
 {
@@ -19,7 +21,7 @@ class ThreadFactory extends Factory
         return [
             'title' => $this->faker->sentence(),
             'body' => $this->faker->paragraph(),
-            'user_id' => \App\Models\User::all()->random()->id,
+            'user_id' => User::all()->random()->id,
         ];
     }
 }

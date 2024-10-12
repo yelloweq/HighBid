@@ -2,9 +2,12 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class StoreThreadRequest extends FormRequest
 {
@@ -19,7 +22,7 @@ class StoreThreadRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -33,11 +36,11 @@ class StoreThreadRequest extends FormRequest
     /**
      * Custom response for when validation fails on HTMX requests.
      */
-    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    protected function failedValidation(Validator $validator)
     {
         if ($this->isHtmx()) {
             $errors = view('components.message', ['message' => $validator->errors()])->render();
-            throw new \Illuminate\Validation\ValidationException($validator, response($errors, Response::HTTP_BAD_REQUEST));
+            throw new ValidationException($validator, response($errors, Response::HTTP_BAD_REQUEST));
         }
 
         parent::failedValidation($validator);

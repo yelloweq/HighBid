@@ -2,45 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Stripe\Customer;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Auction;
+use Brick\Money\Money;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
+use Stripe\StripeClient;
 
 class CustomerController extends Controller
 {
-    public function form(): View
+    //create checkout for customer to pay for a won auction
+    public function checkout(Request $request, Auction $auction): void
     {
-        return view('stripe.form');
-    }
+        $stripe = new StripeClient(env('STRIPE_SECRET'));
 
-    /**
-     * @throws ValidationException
-     */
-    public function save(Request $request): RedirectResponse|JsonResponse
-    {
-        $this->validate($request, [
-            'stripeToken' => 'required'
+
+        $session = $stripe->checkout->sessions->create([
+           'line_items' => [[
+               'price_data' => [
+                   'currency' => 'gbp',
+                   'product_data' => ['name' => $auction->title],
+                   'unit_amount' => $auction->price,
+           ],
+               'quantity' => 1,
+           ],
+        ],
+        'payment_intent_data' => [
+            'application_fee_amount' => Money::of(config('app.fee'), 'gbp'),
+            'transfer_data' => [ 'destination' => $auction->seller()->stripe_connect_id ],
+            ],
+            'mode' => 'payment',
+            'success_url' => route('payment.checkout.success'),
         ]);
-
-        $user = Auth::user();
-
-        if (!$user) {
-            //TODO: Handle no user for credit card save action
-            Log::error("CustomerController::save: user is not logged in");
-        }
-        Customer::save($user, $request->stripeToken);
-
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'redirectUrl' => route('auctions')
-            ]);
-        } else {
-            return redirect()->route('auctions');
-        }
     }
 }

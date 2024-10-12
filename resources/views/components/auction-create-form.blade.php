@@ -106,54 +106,61 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
     <script type="text/javascript">
-        var maxFilesizeVal = 12;
-        var maxFilesVal = 20;
+        const maxFilesizeVal = 12;
+        const maxFilesVal = 20;
 
         Dropzone.autoDiscover = false;
 
-        $(document).ready(function() {
+        function initializeDropzone() {
             $("#myDragAndDropUploader").dropzone({
                 maxFiles: maxFilesVal,
                 url: "{{ route('auction.images.store') }}",
-                success: function(file, response) {
+                success: function (file, response) {
                     console.log(response);
+
                 }
             });
-        })
 
-        // Note that the name "myDragAndDropUploader" is the camelized id of the form.
-        Dropzone.options.myDragAndDropUploader = {
+            Dropzone.options.myDragAndDropUploader = {
+                paramName: "file",
+                maxFilesize: maxFilesizeVal, // MB
+                maxFiles: maxFilesVal,
+                resizeQuality: 1.0,
+                uploadMultiple: true,
+                acceptedFiles: ".jpeg,.jpg,.png,.webp",
+                addRemoveLinks: true,
+                dictDefaultMessage: "Drop your files here or click to upload",
+                dictFallbackMessage: "Your browser doesn't support drag and drop file uploads.",
+                dictFileTooBig: "File is too big. Max filesize: " + maxFilesizeVal + "MB.",
+                dictInvalidFileType: "Invalid file type. Only JPG, JPEG, PNG and GIF files are allowed.",
+                dictMaxFilesExceeded: "You can only upload up to " + maxFilesVal + " files.",
+                maxfilesexceeded: function (file) {
+                    this.removeFile(file);
+                },
+                sending: function (file, xhr, formData) {
+                    $('#message').text('Image Uploading...');
+                },
+                success: function (file, response) {
+                    $('#message').text(response.success);
+                },
+                error: function (file, response) {
+                    $('#message').text('Something Went Wrong! ' + response);
+                    return false;
+                }
+            };
+        }
 
-            paramName: "file",
-            maxFilesize: maxFilesizeVal, // MB
-            maxFiles: maxFilesVal,
-            resizeQuality: 1.0,
-            uploadMultiple: true,
-            acceptedFiles: ".jpeg,.jpg,.png,.webp",
-            addRemoveLinks: true,
-            dictDefaultMessage: "Drop your files here or click to upload",
-            dictFallbackMessage: "Your browser doesn't support drag and drop file uploads.",
-            dictFileTooBig: "File is too big. Max filesize: " + maxFilesizeVal + "MB.",
-            dictInvalidFileType: "Invalid file type. Only JPG, JPEG, PNG and GIF files are allowed.",
-            dictMaxFilesExceeded: "You can only upload up to " + maxFilesVal + " files.",
-            maxfilesexceeded: function(file) {
-                this.removeFile(file);
-            },
-            sending: function(file, xhr, formData) {
-                $('#message').text('Image Uploading...');
-            },
-            success: function(file, response) {
-                $('#message').text(response.success);
-            },
-            error: function(file, response) {
-                $('#message').text('Something Went Wrong! ' + response);
-                return false;
-            }
-        };
+        $(document).ready(function() {
+            initializeDropzone();
+        });
+
+        document.body.addEventListener('htmx:afterSwap', function(event) {
+            console.log('HTMX content swapped, reinitializing Dropzone');
+            initializeDropzone();
+        });
     </script>
+
     @include('flatpickr::components.script')
-    <script type="module" src="https://unpkg.com/@material-tailwind/html@latest/scripts/tooltip.js"></script>
-    <script type="module" src="https://unpkg.com/@material-tailwind/html@latest/scripts/popover.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://unpkg.com/@material-tailwind/html@latest/scripts/collapse.js"></script>
 @endpush

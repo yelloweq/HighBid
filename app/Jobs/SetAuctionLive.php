@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Enums\AuctionStatus;
 use App\Models\Auction;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -45,7 +46,7 @@ class SetAuctionLive implements ShouldQueue
 
             $auction->update(['status' => AuctionStatus::ACTIVE]);
             Log::info('Setting auction live :)');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to set auction live: ' . $e->getMessage());
         }
     }

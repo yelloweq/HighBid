@@ -2,6 +2,7 @@
 
 namespace Chatify\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
@@ -39,7 +40,7 @@ class MessagesController extends Controller
      * Fetch data by id for (user/group)
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function idFetchData(Request $request)
     {
@@ -68,7 +69,7 @@ class MessagesController extends Controller
      * to be downloadable.
      *
      * @param string $fileName
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function download($fileName)
     {
@@ -203,7 +204,7 @@ class MessagesController extends Controller
      * Get contacts list
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse response
+     * @return JsonResponse response
      */
     public function getContacts(Request $request)
     {
@@ -270,7 +271,7 @@ class MessagesController extends Controller
      * Search in messenger
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function search(Request $request)
     {
@@ -294,7 +295,7 @@ class MessagesController extends Controller
      * Get shared photos
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function sharedPhotos(Request $request)
     {

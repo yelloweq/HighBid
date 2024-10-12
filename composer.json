@@ -9,16 +9,16 @@
         "akaunting/laravel-money": "^5.1",
         "asdh/laravel-flatpickr": "^2.0",
         "aws/aws-sdk-php": "^3.300",
+        "brick/money": "^0.8.1",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^2",
-        "laravel/cashier": "^15.3",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "mauricius/laravel-htmx": "^0.6.0",
         "munafio/chatify": "^1.6",
         "ramsey/uuid": "^4.7",
-        "stripe/stripe-php": "^13.14"
+        "stripe/stripe-php": "^16.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

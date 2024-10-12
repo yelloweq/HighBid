@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Auction;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -36,11 +37,10 @@ class IncrementBidsForAuction implements ShouldQueue
     private function processBid($currentHighestBid = null)
     {
         try {
-            // Start a database transaction
             DB::beginTransaction();
 
             if ($currentHighestBid === null) {
-                $currentHighestBid = $this->auction->getCurrentHighestBid(); // Assume this returns the bid with the highest `current_amount`
+                $currentHighestBid = $this->auction->getCurrentHighestBid();
             }
 
             $highestAutobid = $this->auction->bids()
@@ -48,19 +48,19 @@ class IncrementBidsForAuction implements ShouldQueue
                 ->where('id', '!=', $currentHighestBid->id)
                 ->where('amount', '>', $currentHighestBid->current_amount)
                 ->orderByDesc('amount')
-                ->lockForUpdate() // Pessimistic locking
+                ->lockForUpdate()
                 ->first();
 
             if (!$highestAutobid) {
                 Log::info("No autobid found that can outbid the current highest bid for Auction ID: {$this->auction->id}");
-                DB::commit(); // Nothing to update, commit transaction
-                return; // Exit recursion
+                DB::commit();
+                return;
             }
 
             if ($highestAutobid->user_id == $currentHighestBid->user_id) {
                 Log::info("The highest autobid is by the current highest bidder for Auction ID: {$this->auction->id}");
-                DB::commit(); // Nothing to update, commit transaction
-                return; // Exit recursion
+                DB::commit();
+                return;
             }
 
             $bidIncrementInPence = $this->auction->getBidIncrement();
@@ -73,7 +73,7 @@ class IncrementBidsForAuction implements ShouldQueue
 
             // Call processBid recursively with the updated highest bid
             $this->processBid($highestAutobid);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack(); // Rollback the transaction on error
             Log::error("An error occurred while processing bids for Auction ID: {$this->auction->id}: " . $e->getMessage());
         }

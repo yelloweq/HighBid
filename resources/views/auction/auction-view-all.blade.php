@@ -13,20 +13,21 @@
 
 @push('scripts')
 <script>
-document.body.addEventListener('htmx:afterSwap', function(event) {
-    if (event.target.hasAttribute('hx-auction-grid')) {
-        let grid = document.getElementById('auction-grid');
-        let currentPage = parseInt(grid.getAttribute('data-page')) || 1;
-        currentPage++;
-        grid.setAttribute('data-page', currentPage);
-        grid.setAttribute('hx-post', `{{ route('auction.search') }}?page=${currentPage}`);
-    }
-});
 
-document.querySelector('#sidebar-form').addEventListener('change', function() {
-    let grid = document.getElementById('auction-grid');
-    grid.setAttribute('data-page', '1');
-    grid.setAttribute('hx-post', `{{ route('auction.search') }}?page=1`);
-});
+    document.body.addEventListener('htmx:afterSwap', function(event) {
+        if (event.target.hasAttribute('hx-auction-grid')) {
+            let grid = document.getElementById('auction-grid');
+            let currentPage = parseInt(grid.getAttribute('data-page')) || 1;
+            currentPage++;
+            grid.setAttribute('data-page', currentPage.toString());
+            grid.setAttribute('hx-post', `{{ route('auction.search') }}?page=${currentPage}`);
+        }
+    });
+
+    document.querySelector('#sidebar-form').addEventListener('change', function() {
+        let grid = document.getElementById('auction-grid');
+        grid.setAttribute('data-page', '1');
+        grid.setAttribute('hx-post', `{{ route('auction.search') }}?page=1`);
+    });
 </script>
 @endpush

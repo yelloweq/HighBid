@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mauricius\LaravelHtmx\Http\HtmxResponseClientRedirect;
-use Symfony\Component\HttpFoundation\Response;
+use \Illuminate\Http\Response;
 
 class HasSellerPaymentAccount
 {
@@ -15,11 +15,10 @@ class HasSellerPaymentAccount
      *
      * @param Closure(Request): (Response) $next
      */
-    public function handle(Request $request, Closure $next): HtmxResponseClientRedirect
+    public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::user();
-        if (is_null($user->stripe_account_id)) {
-            return new HtmxResponseClientRedirect(route('create.express'));
+        if (is_null($request->user()->stripe_connect_id)) {
+            return new HtmxResponseClientRedirect(route('payments.createConnectAccount'));
         }
 
         return $next($request);

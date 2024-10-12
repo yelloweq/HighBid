@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Mauricius\LaravelHtmx\Http\HtmxResponseClientRedirect;
 use Tests\TestCase;
 
 class RatingControllerTest extends TestCase
@@ -22,7 +23,7 @@ class RatingControllerTest extends TestCase
 
         $response = $controller->createOrUpdate('thread', 1, new Request());
 
-        $this->assertInstanceOf(\Mauricius\LaravelHtmx\Http\HtmxResponseClientRedirect::class, $response);
+        $this->assertInstanceOf(HtmxResponseClientRedirect::class, $response);
         $this->assertEquals(route('login'), $response->headers->get('HX-Redirect'));
     }
 

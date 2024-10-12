@@ -7,6 +7,7 @@ use App\Models\AuctionImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;
+use Throwable;
 
 class AuctionImageController extends Controller
 {
@@ -46,7 +47,7 @@ class AuctionImageController extends Controller
                 $image->save(storage_path('app/public/' . $imagePath));
                 Log::info('Image saved to database.');
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('Upload failed. Error: ' . $e->getMessage());
             return response()->json(['error' => 'Upload failed. Please try again later.'], 500);
         }

@@ -2,6 +2,9 @@
 
 namespace Chatify\Http\Controllers;
 
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -14,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request as FacadesRequest;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MessagesController extends Controller
 {
@@ -39,7 +43,7 @@ class MessagesController extends Controller
      * Returning the view of the app with the required data.
      *
      * @param int $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function index($id = null)
     {
@@ -77,7 +81,7 @@ class MessagesController extends Controller
      * to be downloadable.
      *
      * @param string $fileName
-     * @return \Symfony\Component\HttpFoundation\StreamedResponse|void
+     * @return StreamedResponse|void
      */
     public function download($fileName)
     {
