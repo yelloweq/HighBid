@@ -10,19 +10,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class HasCustomerPaymentAccount
 {
-//    /**
-//     * Handle an incoming request.
-//     *
-//     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-//     */
-//    public function handle(Request $request, Closure $next): Response
-//    {
-//        //TODO: remove dd
-//        dd("middleware has customer payment account");
-//        $user = Auth::user();
-//        if (is_null($user->stripe_customer_id)) {
-//            return new HtmxResponseClientRedirect(route('stripe.form'));
-//        }
-//        return $next($request);
-//    }
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        //TODO: Redirect user to payment gateway onboarding if trying to create an auction without seller account
+
+        return $next($request);
+    }
 }

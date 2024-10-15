@@ -145,8 +145,9 @@
                 },
                 error: function (file, response) {
                     $('#message').text('Something Went Wrong! ' + response);
+                    this.removeFile(file);
                     return false;
-                }
+                },
             };
         }
 
@@ -155,8 +156,10 @@
         });
 
         document.body.addEventListener('htmx:afterSwap', function(event) {
-            console.log('HTMX content swapped, reinitializing Dropzone');
-            initializeDropzone();
+            if (window.location.contains("auction/create")) {
+                console.log('HTMX content swapped, reinitializing Dropzone');
+                initializeDropzone();
+            }
         });
     </script>
 

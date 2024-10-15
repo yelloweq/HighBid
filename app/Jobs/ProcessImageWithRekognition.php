@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Auction;
+use Aws\AwsClient;
 use Aws\Exception\AwsException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -17,16 +18,13 @@ class ProcessImageWithRekognition implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $auction;
+    protected AwsClient $recognitionClient;
 
-    protected $recognitionClient;
-
-    public function __construct(Auction $auction)
+    public function __construct(protected Auction $auction)
     {
-        $this->auction = $auction;
     }
 
-    public function handle()
+    public function handle(): void
     {
         try {
             $this->recognitionClient = new RekognitionClient([

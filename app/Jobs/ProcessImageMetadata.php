@@ -26,7 +26,7 @@ class ProcessImageMetadata implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle()
+    public function handle(): void
     {
         $images = $this->auction->images;
         $referenceModel = null;
@@ -74,7 +74,7 @@ class ProcessImageMetadata implements ShouldQueue
         $latMiles = $latDiff * 69;  // 1 degree of latitude ~ 69 miles
         $longMiles = $longDiff * (69 * cos($loc1['Latitude'] * pi() / 180));  // Correcting longitude by average cosine(latitude)
 
-        // is within 30 miles 
+        // is within 30 miles
         return sqrt($latMiles ** 2 + $longMiles ** 2) < 30;
     }
 }

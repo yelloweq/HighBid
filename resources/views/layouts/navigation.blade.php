@@ -38,7 +38,7 @@
             @auth
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <div class="sm:-my-px sm:ms-10 sm:flex sm:me-4">
-                        <x-nav-link-button :href="route('auction.create')" :active="request()->routeIs('auction.create')">
+                        <x-nav-link-button :href="route('auction.create')" :active="request()->routeIs('auction.create')" hx-boost="false">
                             {{ __('Create Auction') }}
                         </x-nav-link-button>
                     </div>
@@ -108,7 +108,7 @@
                 </x-responsive-nav-link>
             </div>
             <div class="pt-2 pb-3 space-y-1">
-                <x-responsive-nav-link :href="route('auction.create')" :active="request()->routeIs('auction.create')">
+                <x-responsive-nav-link :href="route('auction.create')" :active="request()->routeIs('auction.create')" hx-boost="false">
                     {{ __('Create Auction') }}
                 </x-responsive-nav-link>
             </div>

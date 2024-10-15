@@ -15,19 +15,10 @@ class ClearUnusedImagesFromStorage implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * Create a new job instance.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * Execute the job.
      */
     public function handle(): void
     {
-        //delete AuctionImage where auction_id is null and created_at is older than 24 hours
         AuctionImage::whereNull('auction_id')
             ->where('created_at', '<', now()->subMinutes(30))
             ->delete();

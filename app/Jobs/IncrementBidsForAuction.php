@@ -16,13 +16,11 @@ class IncrementBidsForAuction implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $auction;
     /**
      * Create a new job instance.
      */
-    public function __construct(Auction $auction)
+    public function __construct(protected Auction $auction)
     {
-        $this->auction = $auction;
     }
 
     /**
@@ -34,7 +32,12 @@ class IncrementBidsForAuction implements ShouldQueue
     }
 
 
-    private function processBid($currentHighestBid = null)
+    /**
+     * Recursive function to increment user's auto-bid based on dynamic bid increments
+     * @param $currentHighestBid
+     * @return void
+     */
+    private function processBid($currentHighestBid = null): void
     {
         try {
             DB::beginTransaction();
@@ -69,12 +72,11 @@ class IncrementBidsForAuction implements ShouldQueue
             $highestAutobid->update(['current_amount' => $newBidAmount]);
             Log::info("Incremented bid for auction {$this->auction->id} to {$newBidAmount}");
 
-            DB::commit(); // Commit the transaction to save the update
+            DB::commit();
 
-            // Call processBid recursively with the updated highest bid
             $this->processBid($highestAutobid);
         } catch (Exception $e) {
-            DB::rollBack(); // Rollback the transaction on error
+            DB::rollBack();
             Log::error("An error occurred while processing bids for Auction ID: {$this->auction->id}: " . $e->getMessage());
         }
     }

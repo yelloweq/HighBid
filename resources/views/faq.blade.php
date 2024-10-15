@@ -48,7 +48,7 @@
                     <p class="mb-2 t text-gray-400">
                         <strong>Accepted Payment Methods</strong>: We accept various payment methods including credit/debit cards, PayPal, and bank transfers. Specific payment methods may vary depending on your location.
 
-    
+
                     </p>
                     <p class=" text-gray-400 pt-2">
                         <strong>Payment Security</strong>: Our payment processing is secure and encrypted to safeguard your financial information.
@@ -74,8 +74,5 @@
                 </div>
             </div>
         </div>
-
     </section>
-
-
 </x-app-layout>

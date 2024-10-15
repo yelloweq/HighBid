@@ -6,6 +6,7 @@
             </div>
         </div>
         <div class="flex items-center justify-center py-4 md:py-8 flex-wrap">
+            {{-- TODO: Fix active state (it only gets set once, rerender pills in htmx response? --}}
             <form hx-post="{{ route('dashboard.search') }}" hx-target="[hx-dashboard-auctions-grid]" hx-swap="outerHTML">
                 @csrf
                 <input type="hidden" name="sort" id="sort" value="{{ request()->query('sort') ?? 'active' }}">
@@ -28,8 +29,6 @@
 
             </form>
         </div>
-        <x-dashboard-auction-grid :auctions="$auctions">
-
-        </x-dashboard-auction-grid>
-
+        <x-dashboard-auction-grid :auctions="$auctions" />
+    </div>
 </x-app-layout>

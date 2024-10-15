@@ -38,14 +38,13 @@ class SetAuctionLive implements ShouldQueue
                 Log::info('Auction has no images, cannot set it live');
                 return;
             }
-            //if any auction image has flagged = true, then return
+
             if ($auction->images()->where('flagged', true)->count() > 0) {
                 Log::info('Auction has flagged images, cannot set it live');
                 return;
             }
 
             $auction->update(['status' => AuctionStatus::ACTIVE]);
-            Log::info('Setting auction live :)');
         } catch (Exception $e) {
             Log::error('Failed to set auction live: ' . $e->getMessage());
         }

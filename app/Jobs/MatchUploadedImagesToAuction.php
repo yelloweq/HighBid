@@ -17,15 +17,11 @@ class MatchUploadedImagesToAuction implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $auction;
-    protected $imageMatchingKey;
     /**
      * Create a new job instance.
      */
-    public function __construct(Auction $auction, string $imageMatchingKey)
+    public function __construct(protected Auction $auction, protected string $imageMatchingKey)
     {
-        $this->auction = $auction;
-        $this->imageMatchingKey = $imageMatchingKey;
     }
 
     /**
