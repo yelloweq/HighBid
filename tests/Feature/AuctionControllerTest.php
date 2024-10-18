@@ -42,22 +42,22 @@ class AuctionControllerTest extends TestCase
     }
 
     /** @test */
-    public function an_authenticated_user_can_view_create_auction_form()
+    public function an_authenticated_and_registered_seller_can_view_create_auction_form()
     {
         $user = User::factory()->create([
-            'stripe_account_id' => 'acct_123',
+            'stripe_connect_id' => 'acct_123',
         ]);
 
-        $response = $this->actingAs($user)->get('auction/create');
+        $response = $this->actingAs($user)->get(route('auction.create'));
         $response->assertStatus(200);
         $response->assertViewIs('auction.auction-create');
     }
 
     /** @test */
-    public function an_authenticated_user_can_create_auction()
+    public function an_authenticated_and_registered_seller_can_create_auction()
     {
         $user = User::factory()->create([
-            'stripe_account_id' => 'acct_123',
+            'stripe_connect_id' => 'acct_123',
         ]);
         $response = $this->actingAs($user)->post(route('auction.store'), [
             'title' => 'Unique Title',
@@ -78,6 +78,16 @@ class AuctionControllerTest extends TestCase
     }
 
     /** @test */
+    public function unregistered_seller_visiting_create_auction_form_gets_redirected_to_onboarding()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('auction.create'));
+        $response->assertStatus(200);
+        $response->assertHeader('hx-redirect', route('payments.createConnectAccount'));
+    }
+
+    /** @test */
     public function validate_auction_bid_process()
     {
         Queue::fake();
@@ -86,13 +96,13 @@ class AuctionControllerTest extends TestCase
             'stripe_customer_id' => 'cus_123',
         ]);
         $response = $this->actingAs($otherUser)->post(route('auction.bid', ['auction' => $auction->id]), [
-            'bid' => 120.00 // This should be successful
+            'bid' => 120.00
         ]);
 
         $response->assertViewHas('message', 'Bid placed successfully');
         $this->assertDatabaseHas('bids', [
             'user_id' => $otherUser->id,
-            'amount' => 12000 // in pence
+            'amount' => 12000
         ]);
         Queue::assertPushed(IncrementBidsForAuction::class, 1);
     }

@@ -55,10 +55,3 @@ Unit testing
 ```bash
 ./vendor/bin/sail phpunit
 ```
-<style>
-    h2 {
-        margin:0;;
-        width:100%;
-    };
-    
-</style>

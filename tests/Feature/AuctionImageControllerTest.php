@@ -6,7 +6,6 @@ use App\Http\Controllers\AuctionImageController;
 use Tests\TestCase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,7 +22,6 @@ class AuctionImageControllerTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        // Set up fake storage
         Storage::fake('public');
         DB::beginTransaction();
     }
@@ -36,7 +34,7 @@ class AuctionImageControllerTest extends TestCase
 
 
     /** @test */
-    public function it_requires_a_file_and_image_matching_key()
+    public function it_requires_a_file_and_image_matching_key(): void
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)->json('POST', '/upload/images');
@@ -47,7 +45,7 @@ class AuctionImageControllerTest extends TestCase
 
 
     /** @test */
-    public function it_stores_images_successfully()
+    public function it_stores_images_successfully(): void
     {
         $user = User::factory()->create();
         $file = UploadedFile::fake()->image('photo1.jpg');
@@ -72,7 +70,7 @@ class AuctionImageControllerTest extends TestCase
     }
 
     /** @test */
-    public function it_handles_exceptions_during_upload()
+    public function it_handles_exceptions_during_upload(): void
     {
         $fileMock = $this->createMock(UploadedFile::class);
         $fileMock->method('getClientOriginalName')->willReturn('test.jpg');

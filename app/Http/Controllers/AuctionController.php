@@ -75,10 +75,10 @@ class AuctionController extends Controller
      */
     public function create(Request $request): View|HtmxResponseClientRedirect
     {
+        //TODO: this should already be handled by middleware, remove after checking
         if (!Auth::check()) {
             return new HtmxResponseClientRedirect(route('login'));
         }
-
 
         $deliveryTypes = DeliveryType::cases();
         $auctionTypes = AuctionType::cases();
@@ -139,6 +139,7 @@ class AuctionController extends Controller
     }
     public function bid(Request $request, Auction $auction): Response
     {
+        //TODO: move below logic to a custom request
         $isAuthenticated = Auth::check();
         $isNotActive = $auction->status !== 'Active';
         $hasEnded = $auction->end_time < Carbon::now();
@@ -187,8 +188,9 @@ class AuctionController extends Controller
             ]));
         }
 
+        //TODO: this should just be a bool, why is this a string?
         $isAutobid = $request->input('auto_bid') == '1';
-        $isCurrentHighestBidder = $auction->getCurrentHighestBidder() ? $auction->getCurrentHighestBidder()->id == $request->user()->id : false;
+        $isCurrentHighestBidder = $auction->getCurrentHighestBidder() && $auction->getCurrentHighestBidder()->id == $request->user()->id;
 
         if ($isCurrentHighestBidder) {
             $currentHighestBid = $auction->getCurrentHighestBid();

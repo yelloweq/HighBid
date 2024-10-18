@@ -17,14 +17,11 @@ class IncrementBidsForAuctionTest extends TestCase
     public function auto_bid_is_incremented_after_outbid_by_another_user()
     {
         $auction = Auction::factory()->withStatus('Active')->create(['price' => 10000]);
-        $user = User::factory()->create([
-            'stripe_customer_id' => 'cus_123',
-        ]);
+        $user = User::factory()->create();
         $response = $this->actingAs($user)->post(route('auction.bid', ['auction' => $auction->id]), [
             'bid' => 200,
             'auto_bid' => true,
         ]);
-
 
         $response->assertViewHas('message', 'Bid placed successfully');
         $this->assertDatabaseHas('bids', [
@@ -33,9 +30,7 @@ class IncrementBidsForAuctionTest extends TestCase
             'current_amount' => $auction->price + BidIncrementHelper::getBidIncrement($auction->price),
             'amount' => 20000,
         ]);
-        $otherUser = User::factory()->create([
-            'stripe_customer_id' => 'cus_124',
-        ]);
+        $otherUser = User::factory()->create();
         $responseOther = $this->actingAs($otherUser)->post(route('auction.bid', ['auction' => $auction->id]), [
             'bid' => 150,
         ]);

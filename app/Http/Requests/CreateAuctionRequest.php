@@ -24,13 +24,9 @@ class CreateAuctionRequest extends FormRequest
         return Auth::check();
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
+        //TODO: File max size here might differ from what is allowed in dropzone
         return [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -43,14 +39,9 @@ class CreateAuctionRequest extends FormRequest
         ];
     }
 
-    /**
-     * Handle a failed validation attempt.
-     *
-     * @param Validator $validator
-     * @return void
-     */
-    protected function failedValidation(Validator $validator)
+    protected function failedValidation(Validator $validator): Response
     {
+        //TODO: passing Types like that seems redundant, find better way of propagating them.
         return response()->view('components.auction-create-form', [
             'auctionTypes' => AuctionType::cases(),
             'deliveryTypes' => DeliveryType::cases(),
