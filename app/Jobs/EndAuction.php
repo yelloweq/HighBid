@@ -6,35 +6,27 @@ use App\Enums\AuctionStatus;
 use App\Models\Auction;
 use App\Notifications\AuctionHasEnded;
 use App\Notifications\AuctionWon;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class EndAuction implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct(protected Auction $auction)
-    {
-        //
-    }
+    public function __construct(protected Auction $auction, private readonly string $jobUuid)
+    {}
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
+        if (!$this->auction->end_auction_job_id == $this->jobUuid) return;
         $this->updateAuctionStatus($this->auction);
         $this->notifySeller($this->auction);
         $this->notifyWinner($this->auction);
+
     }
 
     protected function updateAuctionStatus(Auction $auction): void

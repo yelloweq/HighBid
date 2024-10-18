@@ -33,6 +33,7 @@ class Auction extends Model
         'seller_id',
         'start_time',
         'end_time',
+        'end_auction_job_id',
     ];
 
     /**

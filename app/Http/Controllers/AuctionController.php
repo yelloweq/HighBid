@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Akaunting\Money\Money;
+use App\Jobs\EndAuction;
 use App\Jobs\MatchUploadedImagesToAuction;
 use App\Jobs\ProcessImageWithRekognition;
 use Exception;
@@ -107,17 +108,29 @@ class AuctionController extends Controller
                 'delivery_type' => $request->input('delivery-type'),
                 'seller_id' => $request->user()->id ?? Auth::id(),
                 'start_time' => Carbon::now(),
-                'end_time' => Carbon::parse($request->input('end_date')),
+                'end_time' => Carbon::parse($request->input('end-date')),
             ]);
 
             if (!empty($request->auctionCreateKey)) {
                 Log::info('Dispatching job to match images to auction and process with rekognition');
+                //This is chained so that we have scanned for inappropriate images before setting the auction live.
                 MatchUploadedImagesToAuction::withChain([
                     new ProcessImageWithRekognition($auction),
                     new ProcessImageMetadata($auction),
-                    new SetAuctionLive($auction)
+                    new SetAuctionLive($auction),
                 ])->dispatch($auction, $request->auctionCreateKey);
             }
+
+            $jobUuid = Uuid::uuid4()->toString();
+
+            EndAuction::dispatch($auction, $jobUuid)->delay($auction->end_time);
+
+            /**
+             * if auction end time is edited, we create new delayed end auction job with newly generated uuid
+             * this is a hack since you cannot get job id before the job is actually running.
+             */
+            $auction->end_auction_job_id = $jobUuid;
+            $auction->save();
 
             return new HtmxResponseClientRedirect(route('auction.view', ['auction' => $auction->id]));
         } catch (Exception $e) {

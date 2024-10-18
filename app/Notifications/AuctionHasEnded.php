@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\Auction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -11,13 +12,8 @@ class AuctionHasEnded extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(private Auction $auction)
+    {}
 
     /**
      * Get the notification's delivery channels.
@@ -34,6 +30,7 @@ class AuctionHasEnded extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
+        //TODO: Add mail content
         return (new MailMessage)
                     ->line('The introduction to the notification.')
                     ->action('Notification Action', url('/'))
